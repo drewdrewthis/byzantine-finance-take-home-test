@@ -1,0 +1,32 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100vh;
+  gap: 52px;
+  .explanation {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 52px;
+    a {
+      color: #2097ff;
+      text-decoration: none;
+      text-decoration: underline;
+      &:hover {
+        color: #0d63ae;
+      }
+    }
+  }
+  .appContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    max-width: 400px;
+  }
+}

@@ -1,0 +1,49 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100vh;
+  gap: 52px;
+  .explanation {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 52px;
+    a {
+      color: #2097ff;
+      text-decoration: none;
+      text-decoration: underline;
+      &:hover {
+        color: #0d63ae;
+      }
+    }
+  }
+  .tableContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    max-width: 1000px;
+    .nameAndSearch {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      input {
+        width: 200px;
+        height: 32px;
+        border: 2px dashed #442a3d;
+        border-radius: 5px;
+        background: none;
+        padding: 0px 16px;
+        box-sizing: border-box;
+        color: #fff;
+        min-width: 300px;
+      }
+    }
+  }
+}
