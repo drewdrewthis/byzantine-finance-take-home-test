@@ -23,7 +23,7 @@ const RestakeApp: React.FC = () => {
   const { balance: currentBalance, isLoading: isLoadingBalance } =
     useBalanceETH();
   const [stakeAmount, setStakeAmount] = useState<number>(0);
-  const { shares, error } = usePreviewDeposit(stakeAmount.toString());
+  const { shares, maxDeposit, isTooHigh, error } = usePreviewDeposit(stakeAmount.toString());
   const isLoading = isLoadingBalanceOfVault || isLoadingBalance;
   const { isConnected } = useAccount();
 
@@ -80,6 +80,8 @@ const RestakeApp: React.FC = () => {
         </div>
       </div>
 
+      {isTooHigh && <div className={styles.error}>Max deposit reached</div>}
+
       {/* Switch arrows */}
       <div className={styles.switchArrows}>
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -113,12 +115,12 @@ const RestakeApp: React.FC = () => {
             </div>
 
             <div className={`${styles.balance} ${styles.vaultShareBalance}`}>
-              <span>Balance: {Number(balanceOfVault).toFixed(4)}</span>
+              <span>Balance: {balanceOfVault}</span>
             </div>
           </div>
           <div className={styles.rightInput}>
             <div className={styles.resultAmount}>
-              <div>{shares ? Number(shares).toFixed(4) : "0"}</div>
+              <div>{shares}</div>
             </div>
             <div className={styles.price}>
               <span>$0</span>

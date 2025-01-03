@@ -7,6 +7,7 @@ import { CONTRACT_CONFIG } from "@/contracts/byzETHVault";
 import { parseEther } from "viem";
 import toast from "react-hot-toast";
 import { handleTransactionError } from "../../lib/utils";
+import { useVaultBalance } from "./useVaultBalance";
 
 export function useVaultDeposit() {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,13 +15,15 @@ export function useVaultDeposit() {
   const { writeContractAsync } = useWriteContract()
   const { address } = useAccount();
   const { handleWaitForTransactionReceipt } = useTransactionWatcher(); 
+  const { refetchBalance } = useVaultBalance();
 
   const deposit = async (amount: string) => {
     const toastId = toast.loading('Initiating deposit transaction...');
 
     try {
       if(!address) {
-        throw new Error("No address found");
+        toast.error('Please connect your wallet first', { id: toastId });
+        return;
       } 
 
       if (!amount) {
@@ -33,14 +36,16 @@ export function useVaultDeposit() {
 
       setIsLoading(true);
       setError(null);
-        console.log("Depositing", amount, parseEther(amount));
+      const value = parseEther(amount);
       const hash = await writeContractAsync({
         ...CONTRACT_CONFIG,
         functionName: 'deposit',
-        args: [parseEther(amount), address!],
+        args: [value, address!],
+        value,
       });
       toast.success(<ToastSuccessfullDeposit hash={hash} />, { id: toastId });
       const receipt = await handleWaitForTransactionReceipt(hash, toastId);
+      refetchBalance();
       return receipt;
     } catch (err) {
       console.error(err);
