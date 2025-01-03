@@ -2,7 +2,8 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: #2e192a;
+  /** I don't know why this was set to be brown, but you can't see any of the content */
+    // background-color: #2e192a;
   border-radius: 5px;
   width: 100%;
   padding: 16px 0px;

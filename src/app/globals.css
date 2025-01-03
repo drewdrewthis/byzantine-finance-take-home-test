@@ -1,3 +1,7 @@
+/* UI Styles */
+@import "@/ui/global.css";
+
+/** Override Styles */
 :root {
   --background: #ffffff;
   --foreground: #171717;
