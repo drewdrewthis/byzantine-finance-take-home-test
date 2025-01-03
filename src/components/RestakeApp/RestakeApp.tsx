@@ -1,5 +1,5 @@
 // src/components/RestakeApp.tsx
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 
@@ -12,10 +12,20 @@ import { useBalanceETH } from "../../hooks/useBalanceETH";
 const CHAIN_ID = 17000;
 
 const RestakeApp: React.FC = () => {
-  const { balance: balanceOfVault, isLoading: isLoadingBalanceOfVault } = useVaultContract();
-  const { balance: currentBalance, isLoading: isLoadingBalance } = useBalanceETH()
+  const {
+    balance: balanceOfVault,
+    isLoading: isLoadingBalanceOfVault,
+    deposit,
+    error,
+  } = useVaultContract();
+  const { balance: currentBalance, isLoading: isLoadingBalance } =
+    useBalanceETH();
   const [stakeAmount, setStakeAmount] = useState<number>(0);
-  const isLoading = isLoadingBalanceOfVault || isLoadingBalance
+  const isLoading = isLoadingBalanceOfVault || isLoadingBalance;
+
+  const handleRestake = useCallback(() => {
+    deposit(stakeAmount.toString());
+  }, [stakeAmount]);
 
   return (
     <div className={styles.restakeApp}>
@@ -39,7 +49,12 @@ const RestakeApp: React.FC = () => {
             </div>
 
             <div className={styles.balance}>
-              <span>Balance: {currentBalance.formatted ? Number(currentBalance.formatted).toFixed(4) : "--"}</span>
+              <span>
+                Balance:{" "}
+                {currentBalance.formatted
+                  ? Number(currentBalance.formatted).toFixed(4)
+                  : "--"}
+              </span>
             </div>
           </div>
           <div className={styles.rightInput}>
@@ -109,7 +124,14 @@ const RestakeApp: React.FC = () => {
       </div>
 
       {/* Restake button */}
-      <button className={styles.restakeBtn}>Restake</button>
+      <button
+        className={styles.restakeBtn}
+        onClick={() => {
+          handleRestake();
+        }}
+      >
+        Restake
+      </button>
 
       {/* Information section */}
       <div className={styles.infoSection}>

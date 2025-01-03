@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Urbanist } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 const urbanist = Urbanist({
@@ -21,6 +22,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={urbanist.className} suppressHydrationWarning>
         {children}
+        <Toaster position="top-right" />
       </body>
     </html>
   );

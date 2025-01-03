@@ -2,6 +2,18 @@ import { useAccount, useSimulateContract, useWriteContract, useReadContract } fr
 import { CONTRACT_CONFIG } from '@/contracts/byzETHVault';
 import { parseEther, formatEther } from 'viem';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
+
+const toastError = (error: any, toastId: string) => {
+  if (error.name === 'ConnectorNotConnectedError') {
+    toast.error('Please connect your wallet first', { id: toastId });
+  } else {
+    console.error(error)
+    const errorMessage = error instanceof Error ? error.message : 'Transaction failed';
+    toast.error(errorMessage, { id: toastId });
+  }
+  throw error;
+} 
 
 export function useVaultDeposit() {
   const [isLoading, setIsLoading] = useState(false);
@@ -9,6 +21,7 @@ export function useVaultDeposit() {
   const { writeContractAsync } = useWriteContract();
 
   const deposit = async (amount: string) => {
+    const toastId = toast.loading('Initiating deposit transaction...');
     try {
       setIsLoading(true);
       setError(null);
@@ -17,10 +30,12 @@ export function useVaultDeposit() {
         functionName: 'deposit',
         value: parseEther(amount),
       });
+      toast.success('Deposit transaction submitted successfully!', { id: toastId });
       return hash;
     } catch (err) {
       console.error(err);
-      setError(err instanceof Error ? err.message : 'Transaction failed');
+      toastError(err, toastId);
+      setError((err as Error).message);
       throw err;
     } finally {
       setIsLoading(false);
@@ -37,6 +52,7 @@ export function useVaultWithdraw() {
   const { writeContractAsync } = useWriteContract();
 
   const withdraw = async (amount: string) => {
+    const toastId = toast.loading('Initiating withdrawal transaction...');
     try {
       setIsLoading(true);
       setError(null);
@@ -45,10 +61,12 @@ export function useVaultWithdraw() {
         functionName: 'withdraw',
         args: [parseEther(amount)],
       });
+      toast.success('Withdrawal transaction submitted successfully!', { id: toastId });
       return hash;
     } catch (err) {
       console.error(err);
-      setError(err instanceof Error ? err.message : 'Transaction failed');
+      toastError(err, toastId);
+      setError((err as Error).message);
       throw err;
     } finally {
       setIsLoading(false);
