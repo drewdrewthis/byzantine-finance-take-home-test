@@ -15,6 +15,8 @@ import { Button } from "../../ui/components/button";
 import { Loader2 } from "lucide-react";
 import transferArrow from "@/ui/components/icons/transfer-arrow.svg";
 import { cn } from "../../lib/utils";
+import { useVaultEstimateDepositGasFees } from "../../hooks/vault/useDepositGasFees";
+import { useEthPrice } from "../../hooks/vault/useEthPrice";
 
 const CHAIN_ID = 17000;
 
@@ -23,23 +25,42 @@ const RestakeApp: React.FC = () => {
     balance: balanceOfVault,
     isLoading: isLoadingBalanceOfVault,
     deposit,
+    withdraw,
     refetchBalance
   } = useVaultContract();
   const { balance: currentBalance, isLoading: isLoadingBalance } =
     useBalanceETH();
   const [stakeAmount, setStakeAmount] = useState<number>(0);
-  const { shares, maxDeposit, isTooHigh, error } = usePreviewDeposit(stakeAmount.toString());
-  const isLoading = isLoadingBalanceOfVault || isLoadingBalance;
+  const { shares } = usePreviewDeposit(stakeAmount.toString());
   const { isConnected } = useAccount();
   const [isDeposit, setIsDeposit] = useState(true);
+  const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
+  const { gasFees: depositGasFees, refetchGasFees: refetchDepositGasFees, isLoading: isDepositGasFeesLoading } = useVaultEstimateDepositGasFees(stakeAmount.toString());
+  const { price, convertEthToUsd, isLoading: isEthPriceLoading, error: ethPriceError } = useEthPrice();
+  const isLoading = isLoadingBalanceOfVault || isLoadingBalance || isDepositGasFeesLoading || isEthPriceLoading;
 
-  const handleRestake = useCallback(() => {
-    deposit(stakeAmount.toString());
+  const handleButtonClick = useCallback(() => {
+    if (isDeposit) {
+      deposit(stakeAmount.toString());
+    } else {
+      withdraw(shares.toString());
+    }
   }, [stakeAmount, isConnected]);
+
+  useEffect(() => {
+    if (isDeposit) {
+      setWithdrawAmount(Number(shares));
+    } 
+  }, [isDeposit, shares, stakeAmount]); 
+
+  const handleRefresh = useCallback(() => {
+    refetchBalance();
+    refetchDepositGasFees();
+  }, [refetchBalance, refetchDepositGasFees]);   
 
   return (
     <div className={styles.restakeApp}>
-      <button className={styles.refreshIcon} onClick={() => refetchBalance()}>
+      <button className={styles.refreshIcon} onClick={() => handleRefresh()}>
         <svg
           viewBox="0 0 16 16"
           fill="white"
@@ -81,11 +102,10 @@ const RestakeApp: React.FC = () => {
             />
 
             <div className={styles.price}>
-              <span>$0</span>
+              <span>${convertEthToUsd(stakeAmount).toFixed(8)}</span>
             </div>
           </div>
         </div>
-        {isTooHigh && <div className={styles.error}>Max deposit reached</div>}
       </div>
 
 
@@ -112,10 +132,10 @@ const RestakeApp: React.FC = () => {
           </div>
           <div className={styles.rightInput}>
             <div className={styles.resultAmount}>
-              <div>{shares}</div>
+              <input type="number" value={withdrawAmount} onChange={(e) => setWithdrawAmount(Number(e.target.value))} />
             </div>
             <div className={styles.price}>
-              <span>$0</span>
+              <span>${convertEthToUsd(withdrawAmount).toFixed(8)}</span>
             </div>
           </div>
         </div>
@@ -126,7 +146,7 @@ const RestakeApp: React.FC = () => {
       <Button
         className={styles.restakeBtn}
         onClick={() => {
-          handleRestake();
+          handleButtonClick();
         }}
         disabled={isLoading}
       >
@@ -146,7 +166,7 @@ const RestakeApp: React.FC = () => {
           Service fees: <span>0%</span>
         </div>
         <div className={styles.infoLine}>
-          Gas fees: <span>~$0</span>
+          Gas fees: <span>{depositGasFees ? `~ $${convertEthToUsd(Number(depositGasFees)).toFixed(8)}` : "--"}</span>
         </div>
       </div>
     </div>
