@@ -114,7 +114,22 @@ const RestakeApp: React.FC = () => {
 
       {/* Switch arrows */}
       <button className={cn(styles.switchArrows, 'order-2')} onClick={() => setIsDeposit(!isDeposit)}>
-        <Image src={transferArrow} alt="Transfer arrow" width={24} height={24} />
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M8.54544 2V22L1.63635 15.0909"
+            stroke="white"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M15.4546 22L15.4546 2L22.3636 8.90909"
+            stroke="white"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </button>
 
       {/* Receive tokens */}
