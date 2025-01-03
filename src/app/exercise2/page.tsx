@@ -1,11 +1,9 @@
 "use client";
 import { useState } from "react";
 import styles from "./page.module.scss";
-import TableDisplay from "@/components/TableDisplay/TableDisplay";
-import { VaultToDisplay } from "@/types/Table";
 import Link from "next/link";
-import dataTable from "@/data/dataTable.json";
 import RestakeApp from "@/components/RestakeApp/RestakeApp";
+import { Web3Provider } from "@/context/Web3Provider";
 
 export default function Home() {
   return (
@@ -28,7 +26,9 @@ export default function Home() {
         </p>
       </div>
       <div className={styles.appContainer}>
-        <RestakeApp />
+        <Web3Provider>
+          <RestakeApp />
+        </Web3Provider>
       </div>
     </section>
   );
