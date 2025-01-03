@@ -46,16 +46,17 @@ export function SearchBar({ onInputChange, className, ...props }: SearchBarProps
         ref={inputRef}
         placeholder="Search vaults..."
         onChange={handleChange}
+        onFocus={() => setIsOpen(true)}
+        onBlur={() => setIsOpen(false)}
         className={cn(
           "pl-8 pr-10", // Left padding for search icon, right for command key
           "focus-visible:ring-1",
-          props.className
         )}
         {...props}
       />
-      <div className="absolute right-2 top-1.5 flex items-center p-1 bg-muted rounded-sm">
+      <div className="absolute right-2 top-2 flex items-center p-1 bg-muted rounded-sm">
         <Command className="h-full w-3 text-muted-foreground" />
-        <span className="ml-1 text-xs text-muted-foreground">/</span>
+        <span className="ml-1 text-xs text-muted-foreground leading-[1] -mt-[1px]">{!isOpen ? "esc" : "/"}</span>
       </div>
     </div>
   );

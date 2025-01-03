@@ -12,6 +12,11 @@ export default function Home() {
     VaultToDisplay[]
   >(dataTable as VaultToDisplay[]);
 
+  /**
+   * Test notes:
+   * This is a simple search call back that will filter the vaults by name or address based on the search input.
+   * If there were a lot of vaults, we'd consider offloading this to the backend by sending query parameters to the API.
+   */
   const handleInputChange = useCallback ((input: string) => {
     const filterFn = (vault: VaultToDisplay) => vault.name.toLowerCase().includes(input.toLowerCase()) || vault.address.toLowerCase().includes(input.toLowerCase());
     setListVaultToDisplay((dataTable as VaultToDisplay[]).filter(filterFn));
@@ -37,7 +42,7 @@ export default function Home() {
         </p>
       </div>
       <div className={styles.tableContainer}>
-        <div className="flex justify-between w-full">
+        <div className="flex justify-between w-full items-center">
           <h2>The vaults</h2>
           <SearchBar onInputChange={handleInputChange} />
         </div>
