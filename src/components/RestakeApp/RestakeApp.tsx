@@ -39,7 +39,7 @@ const RestakeApp: React.FC = () => {
             </div>
 
             <div className={styles.balance}>
-              <span>Balance: {Number(currentBalance.formatted).toFixed(4)}</span>
+              <span>Balance: {currentBalance.formatted ? Number(currentBalance.formatted).toFixed(4) : "--"}</span>
             </div>
           </div>
           <div className={styles.rightInput}>
