@@ -1,15 +1,21 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import styles from "./page.module.scss";
 import TableDisplay from "@/components/TableDisplay/TableDisplay";
 import { VaultToDisplay } from "@/types/Table";
 import Link from "next/link";
 import dataTable from "@/data/dataTable.json";
+import { SearchBar } from "../components/SearchBar";
 
 export default function Home() {
   const [listVaultToDisplay, setListVaultToDisplay] = useState<
     VaultToDisplay[]
   >(dataTable as VaultToDisplay[]);
+
+  const handleInputChange = useCallback ((input: string) => {
+    setListVaultToDisplay((dataTable as VaultToDisplay[]).filter((vault) => vault.name.includes(input)));
+  }, []);
+
   return (
     <section className={styles.page}>
       <div className={styles.explanation}>
@@ -30,9 +36,9 @@ export default function Home() {
         </p>
       </div>
       <div className={styles.tableContainer}>
-        <div className={styles.nameAndSearch}>
+        <div className="flex justify-between w-full">
           <h2>The vaults</h2>
-          <input type="text" placeholder="This is what you need to replace" />
+          <SearchBar onInputChange={handleInputChange} />
         </div>
         <TableDisplay data={listVaultToDisplay} />
       </div>
