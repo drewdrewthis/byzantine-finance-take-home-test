@@ -1,4 +1,4 @@
-[
+export const BYZETH_VAULT_ABI = [
   {
     "inputs": [],
     "name": "ERC7535AssetsShouldBeEqualToMsgVaule",
@@ -466,4 +466,4 @@
     "type": "function"
   },
   { "stateMutability": "payable", "type": "receive" }
-]
+] as const
