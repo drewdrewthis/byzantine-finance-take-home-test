@@ -13,6 +13,8 @@ import { useAccount } from "wagmi";
 import { usePreviewDeposit } from "../../hooks/vault/usePreviewDeposit";
 import { Button } from "../../ui/components/button";
 import { Loader2 } from "lucide-react";
+import transferArrow from "@/ui/components/icons/transfer-arrow.svg";
+import { cn } from "../../lib/utils";
 
 const CHAIN_ID = 17000;
 
@@ -29,6 +31,7 @@ const RestakeApp: React.FC = () => {
   const { shares, maxDeposit, isTooHigh, error } = usePreviewDeposit(stakeAmount.toString());
   const isLoading = isLoadingBalanceOfVault || isLoadingBalance;
   const { isConnected } = useAccount();
+  const [isDeposit, setIsDeposit] = useState(true);
 
   const handleRestake = useCallback(() => {
     deposit(stakeAmount.toString());
@@ -41,13 +44,13 @@ const RestakeApp: React.FC = () => {
           viewBox="0 0 16 16"
           fill="white"
           xmlns="http://www.w3.org/2000/svg"
-          className={isLoading ? "animate-spin" : ""}
         >
           <path d="M8 16C5.76667 16 3.875 15.225 2.325 13.675C0.775 12.125 0 10.2333 0 8C0 5.76667 0.775 3.875 2.325 2.325C3.875 0.775 5.76667 0 8 0C9.15 0 10.25 0.237333 11.3 0.712C12.35 1.18667 13.25 1.866 14 2.75V0H16V7H9V5H13.2C12.6667 4.06667 11.9373 3.33333 11.012 2.8C10.0867 2.26667 9.08267 2 8 2C6.33333 2 4.91667 2.58333 3.75 3.75C2.58333 4.91667 2 6.33333 2 8C2 9.66667 2.58333 11.0833 3.75 12.25C4.91667 13.4167 6.33333 14 8 14C9.28333 14 10.4417 13.6333 11.475 12.9C12.5083 12.1667 13.2333 11.2 13.65 10H15.75C15.2833 11.7667 14.3333 13.2083 12.9 14.325C11.4667 15.4417 9.83333 16 8 16Z" />
         </svg>
       </button>
+      <div className="flex flex-col gap-4 items-center">
       {/* Tokens to restake */}
-      <div className={styles.inputContainer}>
+      <div className={cn(styles.inputContainer, isDeposit ? 'order-1' : 'order-3')}>
         <div className={styles.label}>Restake</div>
         <div className={styles.lineInput}>
           <div className={styles.leftInput}>
@@ -82,32 +85,17 @@ const RestakeApp: React.FC = () => {
             </div>
           </div>
         </div>
+        {isTooHigh && <div className={styles.error}>Max deposit reached</div>}
       </div>
 
-      {isTooHigh && <div className={styles.error}>Max deposit reached</div>}
 
       {/* Switch arrows */}
-      <div className={styles.switchArrows}>
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M8.54544 2V22L1.63635 15.0909"
-            stroke="white"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M15.4546 22L15.4546 2L22.3636 8.90909"
-            stroke="white"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </div>
+      <button className={cn(styles.switchArrows, 'order-2')} onClick={() => setIsDeposit(!isDeposit)}>
+        <Image src={transferArrow} alt="Transfer arrow" width={24} height={24} />
+      </button>
 
       {/* Receive tokens */}
-      <div className={styles.inputContainer}>
+      <div className={cn(styles.inputContainer, isDeposit ? 'order-3' : 'order-1')}>
         <div className={styles.label}>Receive</div>
         <div className={styles.lineInput}>
           <div className={styles.leftInput}>
@@ -119,7 +107,7 @@ const RestakeApp: React.FC = () => {
             </div>
 
             <div className={`${styles.balance} ${styles.vaultShareBalance}`}>
-              <span>Balance: {balanceOfVault}</span>
+              <span>Balance: {balanceOfVault ?? "--"}</span>
             </div>
           </div>
           <div className={styles.rightInput}>
@@ -132,6 +120,7 @@ const RestakeApp: React.FC = () => {
           </div>
         </div>
       </div>
+      </div>
 
       {/* Restake button */}
       <Button
@@ -141,7 +130,7 @@ const RestakeApp: React.FC = () => {
         }}
         disabled={isLoading}
       >
-        {isLoading ? <Loader2 className="animate-spin" /> : "Restake"}
+        {isLoading ? <Loader2 className="animate-spin" /> : (isDeposit ? "Restake" : "Withdraw")}
       </Button>
 
       {/* Information section */}

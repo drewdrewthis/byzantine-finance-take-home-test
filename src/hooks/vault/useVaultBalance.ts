@@ -12,7 +12,7 @@ import { useEffect } from 'react';
 export function useVaultBalance() {
   const { address } = useAccount();
 
-  const { data: balance = BigInt(0), refetch: refetchBalance, error, isLoading, isRefetching } = useReadContract({
+  const { data: balance, refetch: refetchBalance, error, isLoading, isRefetching } = useReadContract({
     ...CONTRACT_CONFIG,
     functionName: 'balanceOf',
     args: [address!],
@@ -29,7 +29,7 @@ export function useVaultBalance() {
   }, [error, address]);
 
   return {
-    balance: formatEther(balance as bigint),
+    balance: balance ? formatEther(balance as bigint) : null,
     refetchBalance,
     isLoading: isRefetching || isLoading
   };
