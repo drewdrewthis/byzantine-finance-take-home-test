@@ -1,6 +1,5 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { WalletConnectButton } from "../../../components/WalletConnectButton";
 
 export const Header = () => {
-  return <div><WalletConnectButton/></div>;
+  return <div className="flex justify-end w-full flex-0"><WalletConnectButton/></div>;
 };

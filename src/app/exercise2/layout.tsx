@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { Urbanist } from "next/font/google";
-import { Header } from "./components/header";
 import { Web3Provider } from "../../context/Web3Provider";
 
 export const metadata: Metadata = {
@@ -13,12 +11,5 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <>
-      <Web3Provider>
-        <Header />
-        {children}
-      </Web3Provider>
-    </>
-  );
+  return <Web3Provider>{children}</Web3Provider>;
 }
