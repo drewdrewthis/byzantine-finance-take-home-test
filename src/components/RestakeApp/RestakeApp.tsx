@@ -8,6 +8,8 @@ import styles from "./RestakeApp.module.scss";
 import ETH from "@/assets/tokens/ETH.png";
 import { useVaultContract } from "../../hooks/useVaultContract";
 import { useBalanceETH } from "../../hooks/useBalanceETH";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useAccount } from "wagmi";
 
 const CHAIN_ID = 17000;
 
@@ -22,10 +24,11 @@ const RestakeApp: React.FC = () => {
     useBalanceETH();
   const [stakeAmount, setStakeAmount] = useState<number>(0);
   const isLoading = isLoadingBalanceOfVault || isLoadingBalance;
+  const { isConnected } = useAccount();
 
   const handleRestake = useCallback(() => {
     deposit(stakeAmount.toString());
-  }, [stakeAmount]);
+  }, [stakeAmount, isConnected]);
 
   return (
     <div className={styles.restakeApp}>
