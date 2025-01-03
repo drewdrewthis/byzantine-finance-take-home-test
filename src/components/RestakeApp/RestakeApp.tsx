@@ -6,15 +6,16 @@ import { useSearchParams } from "next/navigation";
 import styles from "./RestakeApp.module.scss";
 
 import ETH from "@/assets/tokens/ETH.png";
+import { useVaultContract } from "../../hooks/useVaultContract";
+import { useUserBalance } from "../../hooks/useUserBalance";
 
 const CHAIN_ID = 17000;
 
 const RestakeApp: React.FC = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [currentBalance, setCurrentBalance] = useState(0);
-  const [balanceOfVault, setBalanceOfVault] = useState<number>(0);
-
+  const { balance: balanceOfVault, isLoading: isLoadingBalanceOfVault } = useVaultContract();
+  const { balance: currentBalance, isLoading: isLoadingBalance } = useUserBalance()
   const [stakeAmount, setStakeAmount] = useState<number>(0);
+  const isLoading = isLoadingBalanceOfVault || isLoadingBalance
 
   return (
     <div className={styles.restakeApp}>
@@ -38,7 +39,7 @@ const RestakeApp: React.FC = () => {
             </div>
 
             <div className={styles.balance}>
-              <span>Balance: {currentBalance.toFixed(4)}</span>
+              <span>Balance: {Number(currentBalance.formatted).toFixed(4)}</span>
             </div>
           </div>
           <div className={styles.rightInput}>
@@ -93,7 +94,7 @@ const RestakeApp: React.FC = () => {
             </div>
 
             <div className={`${styles.balance} ${styles.vaultShareBalance}`}>
-              <span>Balance: {balanceOfVault.toFixed(4)}</span>
+              <span>Balance: {Number(balanceOfVault).toFixed(4)}</span>
             </div>
           </div>
           <div className={styles.rightInput}>
