@@ -31,4 +31,4 @@ To test locally, run the following commands:
 
 ## To view the submission on Vercel
 
-**Coming Soon!**
+Deployed on Vercel [here](https://byzantine-finance-take-home-test.vercel.app/)
