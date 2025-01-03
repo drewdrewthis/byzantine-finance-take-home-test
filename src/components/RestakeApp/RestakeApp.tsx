@@ -1,14 +1,10 @@
 // src/components/RestakeApp.tsx
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
-
 import styles from "./RestakeApp.module.scss";
-
 import ETH from "@/assets/tokens/ETH.png";
 import { useVaultContract } from "../../hooks/vault/useVaultContract";
 import { useBalanceETH } from "../../hooks/useBalanceETH";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 import { usePreviewDeposit } from "../../hooks/vault/usePreviewDeposit";
 import { Button } from "../../ui/components/button";
@@ -17,41 +13,48 @@ import transferArrow from "@/ui/components/icons/transfer-arrow.svg";
 import { cn } from "../../lib/utils";
 import { useVaultEstimateDepositGasFees } from "../../hooks/vault/useDepositGasFees";
 import { useEthPrice } from "../../hooks/vault/useEthPrice";
-
-const CHAIN_ID = 17000;
+import { usePreviewWithdraw } from "../../hooks/vault/usePreviewWithdraw";
 
 const RestakeApp: React.FC = () => {
   const {
     balance: balanceOfVault,
-    isLoading: isLoadingBalanceOfVault,
+    isLoading: isVaultLoading,
     deposit,
     withdraw,
-    refetchBalance
+    refetchBalance,
+    symbol,
   } = useVaultContract();
   const { balance: currentBalance, isLoading: isLoadingBalance } =
     useBalanceETH();
   const [stakeAmount, setStakeAmount] = useState<number>(0);
-  const { shares } = usePreviewDeposit(stakeAmount.toString());
+  const { shares: previewReceiveAmount } = usePreviewDeposit(stakeAmount.toString());
   const { isConnected } = useAccount();
   const [isDeposit, setIsDeposit] = useState(true);
   const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
+  const { assets: previewWithdrawAmount } = usePreviewWithdraw(withdrawAmount.toString());
   const { gasFees: depositGasFees, refetchGasFees: refetchDepositGasFees, isLoading: isDepositGasFeesLoading } = useVaultEstimateDepositGasFees(stakeAmount.toString());
-  const { price, convertEthToUsd, isLoading: isEthPriceLoading, error: ethPriceError } = useEthPrice();
-  const isLoading = isLoadingBalanceOfVault || isLoadingBalance || isDepositGasFeesLoading || isEthPriceLoading;
+  const { convertEthToUsd, isLoading: isEthPriceLoading, error: ethPriceError } = useEthPrice();
+  const isLoading = isVaultLoading || isLoadingBalance || isDepositGasFeesLoading || isEthPriceLoading
 
   const handleButtonClick = useCallback(() => {
     if (isDeposit) {
       deposit(stakeAmount.toString());
     } else {
-      withdraw(shares.toString());
+      withdraw(previewReceiveAmount.toString());
     }
   }, [stakeAmount, isConnected]);
 
   useEffect(() => {
     if (isDeposit) {
-      setWithdrawAmount(Number(shares));
-    } 
-  }, [isDeposit, shares, stakeAmount]); 
+      setWithdrawAmount(Number(previewReceiveAmount));
+    }
+  }, [isDeposit, previewReceiveAmount, stakeAmount]); 
+
+  useEffect(() => {
+    if (!isDeposit) { 
+      setStakeAmount(Number(previewWithdrawAmount));
+    }
+  }, [previewWithdrawAmount, isDeposit]); 
 
   const handleRefresh = useCallback(() => {
     refetchBalance();
@@ -122,7 +125,7 @@ const RestakeApp: React.FC = () => {
             <div className={styles.tokenDiv}>
               {/* <div className={styles.waitingImg} /> */}
               <span className={`${styles.tokenSymbol} ${styles.vaultShare}`}>
-                Vaultshare
+                {symbol}
               </span>
             </div>
 
@@ -158,13 +161,13 @@ const RestakeApp: React.FC = () => {
         {/* <div className={styles.infoLine}>
           Reward rate: <span className={styles.highlight}>+3.9%</span>
         </div> */}
-        <div className={styles.infoLine}>
+        {/* <div className={styles.infoLine}>
           Validator activation:{" "}
           <span className={styles.highlight}>~0.4 jours</span>
-        </div>
-        <div className={styles.infoLine}>
+        </div> */}
+        {/* <div className={styles.infoLine}>
           Service fees: <span>0%</span>
-        </div>
+        </div> */}
         <div className={styles.infoLine}>
           Gas fees: <span>{depositGasFees ? `~ $${convertEthToUsd(Number(depositGasFees)).toFixed(8)}` : "--"}</span>
         </div>
