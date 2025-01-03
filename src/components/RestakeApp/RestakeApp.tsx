@@ -6,10 +6,11 @@ import { useSearchParams } from "next/navigation";
 import styles from "./RestakeApp.module.scss";
 
 import ETH from "@/assets/tokens/ETH.png";
-import { useVaultContract } from "../../hooks/useVaultContract";
+import { useVaultContract } from "../../hooks/vault/useVaultContract";
 import { useBalanceETH } from "../../hooks/useBalanceETH";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
+import { usePreviewDeposit } from "../../hooks/vault/usePreviewDeposit";
 
 const CHAIN_ID = 17000;
 
@@ -18,11 +19,11 @@ const RestakeApp: React.FC = () => {
     balance: balanceOfVault,
     isLoading: isLoadingBalanceOfVault,
     deposit,
-    error,
   } = useVaultContract();
   const { balance: currentBalance, isLoading: isLoadingBalance } =
     useBalanceETH();
   const [stakeAmount, setStakeAmount] = useState<number>(0);
+  const { shares, error } = usePreviewDeposit(stakeAmount.toString());
   const isLoading = isLoadingBalanceOfVault || isLoadingBalance;
   const { isConnected } = useAccount();
 
@@ -117,7 +118,7 @@ const RestakeApp: React.FC = () => {
           </div>
           <div className={styles.rightInput}>
             <div className={styles.resultAmount}>
-              <div>0</div>
+              <div>{shares ? Number(shares).toFixed(4) : "0"}</div>
             </div>
             <div className={styles.price}>
               <span>$0</span>

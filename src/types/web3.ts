@@ -1,1 +1,0 @@
-export type TransactionHash = `0x${string}`;

@@ -1,6 +1,6 @@
 import { usePublicClient, useWaitForTransactionReceipt } from 'wagmi';
 import { toast } from 'react-hot-toast';
-import { ToastTransactionError } from '../ui/components/toasts';
+import { ToastTransactionError, ToastTransactionSuccess } from '../ui/components/toasts';
 
 export const useTransactionWatcher = () => {
   const client = usePublicClient();
@@ -14,10 +14,10 @@ export const useTransactionWatcher = () => {
       });
       
       if (receipt?.status === 'success') {
-        toast.success('Transaction successful', { id: toastId });
+        toast.success(<ToastTransactionSuccess hash={hash} />, { id: toastId });
         return receipt;
       } else {
-        toast.error('Transaction failed', { id: toastId });
+        toast.error(<ToastTransactionError hash={hash} />, { id: toastId });
         throw new Error('Transaction failed');
       }
     } catch (error) {
