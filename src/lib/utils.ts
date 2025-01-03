@@ -13,6 +13,8 @@ export function formatHash(hash: string) {
 export const handleTransactionError = (error: any, toastId: string) => {
   if (error.name === 'ConnectorNotConnectedError') {
     toast.error('Please connect your wallet first', { id: toastId });
+  } else if (error.message.includes('User denied')) {
+    toast.error('User denied transaction', { id: toastId });
   } else {
     console.error(error)
     const errorMessage = error instanceof Error ? error.message : 'Transaction failed';

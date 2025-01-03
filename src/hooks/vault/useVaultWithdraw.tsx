@@ -7,6 +7,7 @@ import { CONTRACT_CONFIG } from "@/contracts/byzETHVault";
 import { parseEther } from "viem";
 import toast from "react-hot-toast";
 import { handleTransactionError } from "../../lib/utils";
+import { useVaultBalance } from "./useVaultBalance";
 
 export function useVaultWithdraw() {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,6 +15,7 @@ export function useVaultWithdraw() {
   const { writeContractAsync } = useWriteContract();
   const { address } = useAccount();
   const { handleWaitForTransactionReceipt } = useTransactionWatcher(); 
+  const { refetchBalance } = useVaultBalance(); 
 
   const withdraw = async (amount: string) => {
     const toastId = toast.loading('Initiating withdrawal transaction...');
@@ -27,6 +29,7 @@ export function useVaultWithdraw() {
       });
       const receipt = await handleWaitForTransactionReceipt(hash, toastId);
       toast.success(<ToastSuccessfullWithdrawal hash={hash} />, { id: toastId });
+      refetchBalance();
       return receipt;
     } catch (err) {
       console.error(err);

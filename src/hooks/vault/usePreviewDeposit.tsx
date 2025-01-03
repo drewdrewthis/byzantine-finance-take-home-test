@@ -26,6 +26,7 @@ export function usePreviewDeposit(amount: string) {
     shares: shares ? formatEther(shares as bigint) : 0,
     maxDeposit: maxDepositAmount,
     error,
+    // We'll never use this. I checked and the value is really high
     isTooHigh: Number(maxDepositAmount) < Number(amount),
   };
 }
