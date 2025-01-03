@@ -13,7 +13,8 @@ export default function Home() {
   >(dataTable as VaultToDisplay[]);
 
   const handleInputChange = useCallback ((input: string) => {
-    setListVaultToDisplay((dataTable as VaultToDisplay[]).filter((vault) => vault.name.includes(input)));
+    const filterFn = (vault: VaultToDisplay) => vault.name.toLowerCase().includes(input.toLowerCase()) || vault.address.toLowerCase().includes(input.toLowerCase());
+    setListVaultToDisplay((dataTable as VaultToDisplay[]).filter(filterFn));
   }, []);
 
   return (
