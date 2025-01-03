@@ -1,6 +1,6 @@
 import { useAccount, useBalance } from "wagmi";
 
-export function useUserBalance() {
+export function useBalanceETH() {
   const { address } = useAccount()
   const { data: balance, isLoading } = useBalance({ address })
   return { 

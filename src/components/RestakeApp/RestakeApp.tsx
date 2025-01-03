@@ -7,13 +7,13 @@ import styles from "./RestakeApp.module.scss";
 
 import ETH from "@/assets/tokens/ETH.png";
 import { useVaultContract } from "../../hooks/useVaultContract";
-import { useUserBalance } from "../../hooks/useUserBalance";
+import { useBalanceETH } from "../../hooks/useBalanceETH";
 
 const CHAIN_ID = 17000;
 
 const RestakeApp: React.FC = () => {
   const { balance: balanceOfVault, isLoading: isLoadingBalanceOfVault } = useVaultContract();
-  const { balance: currentBalance, isLoading: isLoadingBalance } = useUserBalance()
+  const { balance: currentBalance, isLoading: isLoadingBalance } = useBalanceETH()
   const [stakeAmount, setStakeAmount] = useState<number>(0);
   const isLoading = isLoadingBalanceOfVault || isLoadingBalance
 
