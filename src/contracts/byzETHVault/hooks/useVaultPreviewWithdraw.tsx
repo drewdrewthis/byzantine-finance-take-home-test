@@ -6,7 +6,7 @@ import { formatEther, parseEther } from "viem";
  * Hook to preview the amount of ETH that would be received for withdrawing a given amount of shares
  * Uses the vault's previewWithdraw function which simulates the withdrawal and returns expected ETH amount
  */
-export function usePreviewWithdraw(shares: string) {
+export function useVaultPreviewWithdraw(shares: string) {
   const { data: assets, error } = useReadContract({
     ...CONTRACT_CONFIG,
     functionName: 'previewWithdraw',

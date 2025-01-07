@@ -3,16 +3,16 @@ import Image from "next/image";
 import styles from "./RestakeApp.module.scss";
 import ETH from "@/assets/tokens/ETH.png";
 import { useAccount } from "wagmi";
-import { Button } from "../../ui/components/button";
+import { Button } from "@/ui/components/button";
 import { Loader2 } from "lucide-react";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
 import {
   useVaultContract,
-  usePreviewDeposit,
-  usePreviewWithdraw,
-  useEthPrice,
-  useBalanceETH 
-} from "../../hooks";
+  useVaultPreviewDeposit,
+  useVaultPreviewWithdraw,
+} from "@/contracts/byzETHVault/hooks";
+import { useBalanceETH, useEthPrice } from "@/hooks";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 /**
  * RestakeApp Component
@@ -24,6 +24,7 @@ import {
  */
 const RestakeApp: React.FC = () => {
   const { isConnected } = useAccount();
+  const { openConnectModal } = useConnectModal();
   const { convertEthToUsd, isLoading: isEthPriceLoading } = useEthPrice();
   const {
     balance: balanceOfVault,
@@ -39,11 +40,11 @@ const RestakeApp: React.FC = () => {
     useBalanceETH();
   const [stakeAmount, setStakeAmount] = useState<number>(0);
   // Test note: The preview isn't necessary, since we were told that it's 1:1
-  const { shares: previewReceiveAmount } = usePreviewDeposit(stakeAmount.toString());
+  const { shares: previewReceiveAmount } = useVaultPreviewDeposit(stakeAmount.toString());
   const [isDeposit, setIsDeposit] = useState(true);
   const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
   // Test note: The preview isn't necessary, since we were told that it's 1:1
-  const { assets: previewWithdrawAmount } = usePreviewWithdraw(withdrawAmount.toString());
+  const { assets: previewWithdrawAmount } = useVaultPreviewWithdraw(withdrawAmount.toString());
   const [gasFees, setGasFees] = useState<string | null>(null);
   const isLoading = isVaultLoading || isLoadingBalance || isEthPriceLoading;
 
@@ -69,6 +70,11 @@ const RestakeApp: React.FC = () => {
    * Executes the appropriate transaction based on current mode
    */
   const handleButtonClick = useCallback(() => {
+    if (!isConnected) {
+      openConnectModal?.();
+      return;
+    }
+
     if (isDeposit) {
       deposit(stakeAmount.toString());
     } else {
@@ -224,7 +230,7 @@ const RestakeApp: React.FC = () => {
           Service fees: <span>0%</span>
         </div> */}
         <div className={styles.infoLine}>
-          Gas fees: <span>{gasFees ? `~ $${convertEthToUsd(Number(gasFees)).toFixed(8)}` : "--"}</span>
+          Gas fees: <span className="text-xs">{gasFees ? `~ $${convertEthToUsd(Number(gasFees)).toFixed(8)}` : "Connect wallet to estimate gas fees"}</span>
         </div>
       </div>
     </div>

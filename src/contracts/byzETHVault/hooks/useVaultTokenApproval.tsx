@@ -7,7 +7,7 @@ import { useTransactionWatcher } from "../../../hooks/useTransactionWatcher";
 // Maximum uint256 value for unlimited approval
 const MAX_UINT256 = BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
 
-export function useTokenApproval(tokenAddress: string, spenderAddress: string) {
+export function useVaultTokenApproval(tokenAddress: string, spenderAddress: string) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { address } = useAccount();

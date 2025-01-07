@@ -6,7 +6,7 @@ import { formatEther, parseEther } from "viem";
  * Hook to preview the amount of shares that would be received for a given deposit amount
  * Uses the vault's previewDeposit function which simulates the deposit and returns expected shares
  */
-export function usePreviewDeposit(amount: string) {
+export function useVaultPreviewDeposit(amount: string) {
   const { address } = useAccount(); 
   const { data: shares, error } = useReadContract({
     ...CONTRACT_CONFIG,
