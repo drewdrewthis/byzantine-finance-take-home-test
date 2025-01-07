@@ -59,5 +59,7 @@ export function getInputFontSize(value: string): string {
  */
 export function formatNumberInputValue(value: string, decimals: number): string {
   BigNumber.config({ EXPONENTIAL_AT: 1e+9 })
+  // Allow 0.000 
+  if (Number(value) === 0) return value;
   return new BigNumber(value).dp(decimals).toString();
 }

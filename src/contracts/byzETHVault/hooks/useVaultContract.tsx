@@ -27,7 +27,7 @@ export function useVaultContract() {
     const fetchContractData = async () => {
       try {
         if (!client) return;
-        const [symbolData, decimalsData, maxWithdrawData] = await Promise.all([
+        const [symbolData, decimalsData] = await Promise.all([
           client.readContract({
             ...CONTRACT_CONFIG,
             functionName: 'symbol',
@@ -35,15 +35,8 @@ export function useVaultContract() {
           client.readContract({
             ...CONTRACT_CONFIG, 
             functionName: 'decimals',
-          }),
-          client.readContract({
-            ...CONTRACT_CONFIG, 
-            functionName: 'maxWithdraw',
-            args: [address ?? '0x0000000000000000000000000000000000000000'],  
-          }), 
+          })
         ]);
-
-        console.log({ maxWithdrawData });
 
         setSymbol(symbolData as string);
         setDecimals(decimalsData as number);
