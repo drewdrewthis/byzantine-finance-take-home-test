@@ -1,4 +1,4 @@
-import { usePublicClient } from 'wagmi';
+import { useAccount, usePublicClient } from 'wagmi';
 import { useVaultBalance } from './useVaultBalance';
 import { useVaultDeposit } from './useVaultDeposit';
 import { useVaultWithdraw } from './useVaultWithdraw';
@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
  */
 export function useVaultContract() {
   const client = usePublicClient(); 
+  const { address } = useAccount();
   const { deposit, isLoading: isDepositLoading, error: depositError } = useVaultDeposit();
   const { withdraw, isLoading: isWithdrawLoading, error: withdrawError } = useVaultWithdraw();
   const { balance, refetchBalance, isLoading: isBalanceLoading } = useVaultBalance()
@@ -26,7 +27,7 @@ export function useVaultContract() {
     const fetchContractData = async () => {
       try {
         if (!client) return;
-        const [symbolData, decimalsData] = await Promise.all([
+        const [symbolData, decimalsData, maxWithdrawData] = await Promise.all([
           client.readContract({
             ...CONTRACT_CONFIG,
             functionName: 'symbol',
@@ -34,8 +35,15 @@ export function useVaultContract() {
           client.readContract({
             ...CONTRACT_CONFIG, 
             functionName: 'decimals',
-          })
+          }),
+          client.readContract({
+            ...CONTRACT_CONFIG, 
+            functionName: 'maxWithdraw',
+            args: [address ?? '0x0000000000000000000000000000000000000000'],  
+          }), 
         ]);
+
+        console.log({ maxWithdrawData });
 
         setSymbol(symbolData as string);
         setDecimals(decimalsData as number);
@@ -48,7 +56,7 @@ export function useVaultContract() {
     };
 
     fetchContractData();
-  }, [client]);
+  }, [client, address]);
 
   return {
     balance,

@@ -92,8 +92,8 @@ export function useEthPrice() {
    * @returns USD value as number
    */
    const convertEthToUsd = useCallback(
-    (ethAmount: string): number => {
-      return new BigNumber(ethAmount).multipliedBy(currentPrice).toNumber();
+    (ethAmount: string): string => {
+      return new BigNumber(ethAmount).multipliedBy(currentPrice).toFixed(2);
     },
     [currentPrice]
   );

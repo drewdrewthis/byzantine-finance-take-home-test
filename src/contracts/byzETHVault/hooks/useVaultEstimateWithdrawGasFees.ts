@@ -28,7 +28,7 @@ export function useVaultEstimateWithdrawGasFees() {
         const gasEstimate = await publicClient.estimateContractGas({
           ...CONTRACT_CONFIG,
           functionName: "withdraw",
-          args: [value, address, CONTRACT_CONFIG.address],
+          args: [value, address, address],
           account: address,
         });
 

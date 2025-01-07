@@ -9,6 +9,7 @@ import { cn, getInputFontSize, formatNumberInputValue } from "@/lib/utils";
 import { useVaultContract } from "@/contracts/byzETHVault/hooks";
 import { useBalanceETH, useEthPrice } from "@/hooks";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import BigNumber from "bignumber.js";
 
 /**
  * RestakeApp Component
@@ -293,7 +294,7 @@ const RestakeApp: React.FC = () => {
           Service fees: <span>0%</span>
         </div> */}
         <div className={styles.infoLine}>
-          Gas fees: <span className="text-xs">{gasFees ? `~ $${convertEthToUsd(gasFees)}` : "Connect wallet to estimate gas fees"}</span>
+              <span>Gas fees:</span> {isConnected ? gasFees ? <span className="text-xs" title={BigNumber(gasFees).dp(18).toString()}>{gasFees}{` ETH (~$${convertEthToUsd(gasFees)})`}</span> : '--' : "Connect wallet to estimate gas fees"}
         </div>
       </div>
     </div>
