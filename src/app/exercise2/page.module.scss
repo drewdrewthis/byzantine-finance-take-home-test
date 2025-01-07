@@ -13,12 +13,7 @@
     align-items: center;
     margin-top: 52px;
     a {
-      color: #2097ff;
-      text-decoration: none;
-      text-decoration: underline;
-      &:hover {
-        color: #0d63ae;
-      }
+      @apply text-link;
     }
   }
   .appContainer {
