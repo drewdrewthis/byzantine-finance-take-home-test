@@ -32,3 +32,15 @@ To test locally, run the following commands:
 ## To view the submission on Vercel
 
 Deployed on Vercel [here](https://byzantine-finance-take-home-test.vercel.app/)
+
+## TODOs
+
+To create a TODO.md file with the TODOs found in the codebase, run the following command:
+
+```bash
+./scripts/find-todos.sh
+```
+
+This will create a TODO.md file in the root of the project with the TODOs found in the codebase.
+
+View the TODO.md file [here](./TODO.md)

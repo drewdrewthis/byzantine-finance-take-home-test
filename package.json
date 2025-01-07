@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "find-todos": "./scripts/find-todos.sh"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.1",

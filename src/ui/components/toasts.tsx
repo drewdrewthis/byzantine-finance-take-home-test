@@ -1,5 +1,4 @@
 import { Hash } from "viem";
-import { formatHash } from "../../lib/utils";
 
 interface TransactionToastProps {
   hash: Hash;
