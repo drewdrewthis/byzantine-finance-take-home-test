@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { usePublicClient } from "wagmi";
 import { useAccount } from "wagmi";
 import { CONTRACT_CONFIG } from "@/contracts/byzETHVault";
@@ -51,11 +51,11 @@ export function useVaultEstimateDepositGasFees(depositAmount: string) {
     } finally {
       setIsLoading(false);
     }
-  }, [depositAmount]);
+  }, [depositAmount, estimateGasFees]);
 
   useEffect(() => {
     fetchGasFees();
-  }, [depositAmount]);
+  }, [depositAmount, fetchGasFees]);
 
   return { gasFees, refetchGasFees: fetchGasFees, isLoading };
 }

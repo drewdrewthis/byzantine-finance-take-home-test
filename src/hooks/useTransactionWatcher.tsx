@@ -1,4 +1,4 @@
-import { usePublicClient, useWaitForTransactionReceipt } from 'wagmi';
+import { usePublicClient } from 'wagmi';
 import { toast } from 'react-hot-toast';
 import { ToastTransactionError, ToastTransactionSuccess } from '../ui/components/toasts';
 

@@ -32,7 +32,7 @@ const RestakeApp: React.FC = () => {
   const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
   const { assets: previewWithdrawAmount } = usePreviewWithdraw(withdrawAmount.toString());
   const { gasFees: depositGasFees, refetchGasFees: refetchDepositGasFees, isLoading: isDepositGasFeesLoading } = useVaultEstimateDepositGasFees(stakeAmount.toString());
-  const { convertEthToUsd, isLoading: isEthPriceLoading, error: ethPriceError } = useEthPrice();
+  const { convertEthToUsd, isLoading: isEthPriceLoading } = useEthPrice();
   const isLoading = isVaultLoading || isLoadingBalance || isDepositGasFeesLoading || isEthPriceLoading
 
   const handleButtonClick = useCallback(() => {
@@ -41,13 +41,13 @@ const RestakeApp: React.FC = () => {
     } else {
       withdraw(previewReceiveAmount.toString());
     }
-  }, [stakeAmount, isConnected]);
+  }, [stakeAmount, isConnected, isDeposit, previewReceiveAmount, withdraw, deposit]);
 
   useEffect(() => {
     if (isDeposit) {
       setWithdrawAmount(Number(previewReceiveAmount));
     }
-  }, [isDeposit, previewReceiveAmount, stakeAmount]); 
+  }, [isDeposit, previewReceiveAmount, stakeAmount, withdrawAmount]); 
 
   useEffect(() => {
     if (!isDeposit) { 

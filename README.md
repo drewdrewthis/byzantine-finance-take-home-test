@@ -57,7 +57,7 @@ View the TODO.md file [here](./TODO.md)
 
 ### Linting
 
-* I'd like to add linting rules that would automatically clean up the imports in the codebase, but this was out of scope for this test.
+* I'd like to add better linting config and rules that would automatically clean up the imports in the codebase, but this was out of scope for this test.
 
 ### Exercise 1: Search
 
