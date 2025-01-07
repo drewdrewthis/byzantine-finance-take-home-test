@@ -7,6 +7,11 @@ import { useTransactionWatcher } from "../../../hooks/useTransactionWatcher";
 // Maximum uint256 value for unlimited approval
 const MAX_UINT256 = BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
 
+/**
+ * Hook for approving a spender to spend tokens on behalf of the user
+ * @param tokenAddress - The address of the token to approve
+ * @param spenderAddress - The address of the spender
+ */
 export function useVaultTokenApproval(tokenAddress: string, spenderAddress: string) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,6 +32,7 @@ export function useVaultTokenApproval(tokenAddress: string, spenderAddress: stri
 
   /**
    * Approves the spender to spend the maximum amount of tokens
+   * @returns A promise that resolves to the transaction receipt
    */
   const approve = async () => {
     const toastId = toast.loading('Requesting approval...');

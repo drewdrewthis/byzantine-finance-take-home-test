@@ -18,9 +18,6 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
  * RestakeApp Component
  * 
  * A React component that provides a user interface for staking and unstaking ETH in the byzETH vault.
- * 
- * Test note: The preview isn't necessary for the transactions, since we were told that it's 1:1,
- * but I did it anyway since I was interested in the vault implementation.
  */
 const RestakeApp: React.FC = () => {
   const { isConnected } = useAccount();

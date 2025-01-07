@@ -6,6 +6,9 @@ import { CONTRACT_CONFIG } from '../config';
 import { useVaultEstimateWithdrawGasFees } from './useVaultEstimateWithdrawGasFees';
 import { useVaultEstimateDepositGasFees } from './useVaultEstimateDepositGasFees';
 
+/**
+ * Hook for interacting with the byzETH vault
+ */
 export function useVaultContract() {
   const { deposit, isLoading: isDepositLoading, error: depositError } = useVaultDeposit();
   const { withdraw, isLoading: isWithdrawLoading, error: withdrawError } = useVaultWithdraw();

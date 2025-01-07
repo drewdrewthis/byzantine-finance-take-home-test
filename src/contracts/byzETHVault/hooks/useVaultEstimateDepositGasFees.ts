@@ -13,6 +13,8 @@ export function useVaultEstimateDepositGasFees() {
 
   /**
    * Estimates the gas fees required for depositing the specified amount into the vault
+   * @param amount - The amount of ETH to deposit
+   * @returns The estimated gas fees in ETH
    */ 
   const estimateGasFees = useCallback(
     async (amount: string) => {

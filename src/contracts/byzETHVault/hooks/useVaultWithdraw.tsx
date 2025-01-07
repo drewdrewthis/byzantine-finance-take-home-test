@@ -3,12 +3,15 @@ import { useWriteContract } from "wagmi";
 import { useAccount } from "wagmi";
 import { useTransactionWatcher } from "../../../hooks/useTransactionWatcher";
 import { ToastSuccessfullWithdrawal } from "../../../ui/components/toasts";
-import { CONTRACT_CONFIG } from "@/contracts/byzETHVault";
+import { CONTRACT_CONFIG } from "../config";
 import { parseEther } from "viem";
 import toast from "react-hot-toast";
 import { handleTransactionError } from "../../../lib/utils";
 import { useVaultBalance } from "./useVaultBalance";
 
+/**
+ * Hook for withdrawing ETH from the byzETH vault
+ */
 export function useVaultWithdraw() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,6 +20,11 @@ export function useVaultWithdraw() {
   const { handleWaitForTransactionReceipt } = useTransactionWatcher(); 
   const { refetchBalance } = useVaultBalance(); 
 
+  /**
+   * Function to withdraw ETH from the vault
+   * @param amount - The amount of ETH to withdraw
+   * @returns A promise that resolves to the transaction receipt
+   */
   const withdraw = async (amount: string) => {
     const toastId = toast.loading('Initiating withdrawal transaction...');
     try {
