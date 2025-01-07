@@ -15,7 +15,7 @@ const CACHE_EXPIRY = 30000; // 30 seconds in ms
  * Custom hook to fetch and manage ETH price data from CoinGecko
  * Provides current ETH price and conversion utility
  * Uses localStorage caching to avoid rate limiting
- * Handles CORS errors by using a proxy if needed
+ * Handles CORS with appropriate headers for Next.js/Vercel deployment
  * 
  * NOTE: 
  * This uses real ETH price, which won't necessarily be the same as the price of the ETH on Holesky
@@ -36,42 +36,38 @@ export function useEthPrice() {
         }
       }
 
-      // Try direct API call first
       try {
         const response = await fetch(
           "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum",
           {
+            method: 'GET',
             headers: {
               'Accept': 'application/json',
               'Access-Control-Allow-Origin': '*'
+            },
+            mode: 'cors',
+            next: {
+              revalidate: CACHE_EXPIRY / 1000 // Convert ms to seconds for Next.js
             }
           }
         );
         
-        if (response.ok) {
-          const data = await response.json();
-          localStorage.setItem(CACHE_KEY, JSON.stringify({
-            data,
-            timestamp: Date.now()
-          }));
-          return data;
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
+        const data = await response.json();
+        
+        // Update cache
+        localStorage.setItem(CACHE_KEY, JSON.stringify({
+          data,
+          timestamp: Date.now()
+        }));
+
+        return data;
       } catch (err) {
-        console.warn('Direct API call failed, trying proxy:', err);
-      }
-
-      // If direct call fails, try with CORS proxy
-      const proxyResponse = await fetch(
-        "https://cors-anywhere.herokuapp.com/https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum",
-        {
-          headers: {
-            'Accept': 'application/json',
-            'Origin': window.location.origin
-          }
-        }
-      );
-
-      if (!proxyResponse.ok) {
+        console.error('Failed to fetch ETH price:', err);
+        
         // Return cached data if available, even if expired
         if (cached) {
           const { data } = JSON.parse(cached);
@@ -79,18 +75,7 @@ export function useEthPrice() {
         }
         throw new Error("Failed to fetch ETH price");
       }
-      
-      const data = await proxyResponse.json();
-      
-      // Update cache
-      localStorage.setItem(CACHE_KEY, JSON.stringify({
-        data,
-        timestamp: Date.now()
-      }));
-
-      return data;
     },
-    // Still refresh every 30 seconds
     refetchInterval: CACHE_EXPIRY,
   });
 

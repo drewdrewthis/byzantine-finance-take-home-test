@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useWriteContract } from "wagmi";
 import { useAccount } from "wagmi";
-import { useTransactionWatcher } from "../useTransactionWatcher";
-import { ToastSuccessfullWithdrawal } from "../../ui/components/toasts";
+import { useTransactionWatcher } from "../../../hooks/useTransactionWatcher";
+import { ToastSuccessfullWithdrawal } from "../../../ui/components/toasts";
 import { CONTRACT_CONFIG } from "@/contracts/byzETHVault";
 import { parseEther } from "viem";
 import toast from "react-hot-toast";
-import { handleTransactionError } from "../../lib/utils";
+import { handleTransactionError } from "../../../lib/utils";
 import { useVaultBalance } from "./useVaultBalance";
 
 export function useVaultWithdraw() {

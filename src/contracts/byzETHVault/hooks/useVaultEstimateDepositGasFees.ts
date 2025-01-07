@@ -1,14 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { usePublicClient } from "wagmi";
 import { useAccount } from "wagmi";
-import { CONTRACT_CONFIG } from "@/contracts/byzETHVault";
+import { CONTRACT_CONFIG } from "@/contracts/byzETHVault/config";
 import { formatEther, parseEther } from "viem";
 
-export function useVaultEstimateDepositGasFees(depositAmount: string) {
+export function useVaultEstimateDepositGasFees() {
   const { address } = useAccount();
   const publicClient = usePublicClient();
-  const [gasFees, setGasFees] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   const estimateGasFees = useCallback(
     async (amount: string) => {
@@ -39,28 +37,5 @@ export function useVaultEstimateDepositGasFees(depositAmount: string) {
     [publicClient, address]
   );
 
-  const fetchGasFees = useCallback(async () => {
-    try {
-      if (parseInt(depositAmount) === 0) {
-        setGasFees(null);
-        return;
-      };
-
-      setIsLoading(true);
-      const gasFees = await estimateGasFees(depositAmount);
-      setGasFees(gasFees);
-    } catch (err) {
-      if (!(err as Error).message.includes("insufficient funds")) {
-        console.error("Error fetching gas fees:", err);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [depositAmount, estimateGasFees]);
-
-  useEffect(() => {
-    fetchGasFees();
-  }, [depositAmount, fetchGasFees]);
-
-  return { gasFees, refetchGasFees: fetchGasFees, isLoading };
+  return { estimateGasFees };
 }

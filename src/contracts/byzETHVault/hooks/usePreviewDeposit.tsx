@@ -1,5 +1,5 @@
 import { useAccount, useReadContract } from "wagmi";
-import { CONTRACT_CONFIG } from "@/contracts/byzETHVault";
+import { CONTRACT_CONFIG } from "@/contracts/byzETHVault/config";
 import { formatEther, parseEther } from "viem";
 
 /**

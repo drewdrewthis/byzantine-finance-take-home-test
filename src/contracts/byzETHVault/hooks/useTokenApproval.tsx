@@ -2,7 +2,7 @@ import { useReadContract, useWriteContract, useAccount } from "wagmi";
 import { useState } from "react";
 import { erc20Abi, Hash } from "viem";
 import toast from "react-hot-toast";
-import { useTransactionWatcher } from "../useTransactionWatcher";
+import { useTransactionWatcher } from "../../../hooks/useTransactionWatcher";
 
 // Maximum uint256 value for unlimited approval
 const MAX_UINT256 = BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
