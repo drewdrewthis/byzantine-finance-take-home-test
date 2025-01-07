@@ -20,6 +20,8 @@ const CACHE_EXPIRY = 30000; // 30 seconds in ms
  * NOTE: 
  * This uses real ETH price, which won't necessarily be the same as the price of the ETH on Holesky
  * But this is a good enough approximation for the test
+ * 
+ * TODO: Add a reliable source of ETH price data that is chain-specific
  */
 export function useEthPrice() {
   const { data: priceData, isLoading, error } = useQuery<EthereumPrice[]>({

@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* TODO: This should be reconciled with the global.css that came with the boilerplate for a consistent theme */
 @layer base {
   :root {
     /* --background: 0 0% 100%;
@@ -16,7 +18,7 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
     --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent-foreground: 222.0 0% 5.9%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
@@ -29,6 +31,7 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem
   }
+
   .dark {
     /* --background: 222.2 84% 4.9%;
         --foreground: 210 40% 98%; */
@@ -56,11 +59,22 @@
     --chart-5: 340 75% 55%
   }
 }
+
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+}
+.text-link {
+  color: #2097ff;
+  text-decoration: none;
+
+  &:hover {
+    color: #0d63ae;
+    text-decoration: underline;
   }
 }

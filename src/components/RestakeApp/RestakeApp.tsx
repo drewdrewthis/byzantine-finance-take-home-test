@@ -9,12 +9,15 @@ import { useAccount } from "wagmi";
 import { usePreviewDeposit } from "../../hooks/vault/usePreviewDeposit";
 import { Button } from "../../ui/components/button";
 import { Loader2 } from "lucide-react";
-import transferArrow from "@/ui/components/icons/transfer-arrow.svg";
 import { cn } from "../../lib/utils";
 import { useVaultEstimateDepositGasFees } from "../../hooks/vault/useDepositGasFees";
 import { useEthPrice } from "../../hooks/vault/useEthPrice";
 import { usePreviewWithdraw } from "../../hooks/vault/usePreviewWithdraw";
 
+/**
+ * Test note: The preview isn't necessary for the transactions, since we were told that it's 1:1,
+ * but I did it anyway since I was interested in the vault implementation.
+ */
 const RestakeApp: React.FC = () => {
   const {
     balance: balanceOfVault,
@@ -27,13 +30,15 @@ const RestakeApp: React.FC = () => {
   const { balance: currentBalance, isLoading: isLoadingBalance } =
     useBalanceETH();
   const [stakeAmount, setStakeAmount] = useState<number>(0);
+  // Test note: The preview isn't necessary, since we were told that it's 1:1
   const { shares: previewReceiveAmount } = usePreviewDeposit(stakeAmount.toString());
   const { isConnected } = useAccount();
   const [isDeposit, setIsDeposit] = useState(true);
   const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
+  // Test note: The preview isn't necessary, since we were told that it's 1:1
   const { assets: previewWithdrawAmount } = usePreviewWithdraw(withdrawAmount.toString());
   const { gasFees: depositGasFees, refetchGasFees: refetchDepositGasFees, isLoading: isDepositGasFeesLoading } = useVaultEstimateDepositGasFees(stakeAmount.toString());
-  const { convertEthToUsd, isLoading: isEthPriceLoading, error: ethPriceError } = useEthPrice();
+  const { convertEthToUsd, isLoading: isEthPriceLoading } = useEthPrice();
   const isLoading = isVaultLoading || isLoadingBalance || isDepositGasFeesLoading || isEthPriceLoading
 
   const handleButtonClick = useCallback(() => {
@@ -42,13 +47,13 @@ const RestakeApp: React.FC = () => {
     } else {
       withdraw(previewReceiveAmount.toString());
     }
-  }, [stakeAmount, isConnected]);
+  }, [stakeAmount, isConnected, isDeposit, previewReceiveAmount, withdraw, deposit]);
 
   useEffect(() => {
     if (isDeposit) {
       setWithdrawAmount(Number(previewReceiveAmount));
     }
-  }, [isDeposit, previewReceiveAmount, stakeAmount]); 
+  }, [isDeposit, previewReceiveAmount, stakeAmount, withdrawAmount]); 
 
   useEffect(() => {
     if (!isDeposit) { 

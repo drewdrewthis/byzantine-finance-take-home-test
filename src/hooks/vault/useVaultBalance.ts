@@ -1,7 +1,6 @@
 import { useAccount, useReadContract } from 'wagmi';
 import { CONTRACT_CONFIG } from '@/contracts/byzETHVault';
 import { formatEther } from 'viem';
-import { handleTransactionError } from '../../lib/utils';
 import toast from 'react-hot-toast';
 import { useEffect } from 'react';
 

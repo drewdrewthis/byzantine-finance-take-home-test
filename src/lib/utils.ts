@@ -10,7 +10,7 @@ export function formatHash(hash: string) {
   return hash.slice(0, 5) + "..." + hash.slice(-3);
 }
 
-export const handleTransactionError = (error: any, toastId: string) => {
+export const handleTransactionError = (error: Error, toastId: string) => {
   if (error.name === 'ConnectorNotConnectedError') {
     toast.error('Please connect your wallet first', { id: toastId });
   } else if (error.message.includes('User denied')) {
