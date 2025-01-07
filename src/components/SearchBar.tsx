@@ -51,6 +51,7 @@ export function SearchBar({ onInputChange, className, ...props }: SearchBarProps
         className={cn(
           "pl-8 pr-10", // Left padding for search icon, right for command key
           "focus-visible:ring-1",
+          "text-foreground"
         )}
         {...props}
       />

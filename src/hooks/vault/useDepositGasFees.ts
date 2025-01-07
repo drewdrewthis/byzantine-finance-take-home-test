@@ -41,6 +41,11 @@ export function useVaultEstimateDepositGasFees(depositAmount: string) {
 
   const fetchGasFees = useCallback(async () => {
     try {
+      if (parseInt(depositAmount) === 0) {
+        setGasFees(null);
+        return;
+      };
+
       setIsLoading(true);
       const gasFees = await estimateGasFees(depositAmount);
       setGasFees(gasFees);

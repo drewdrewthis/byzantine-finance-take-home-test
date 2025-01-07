@@ -14,6 +14,10 @@ import { useVaultEstimateDepositGasFees } from "../../hooks/vault/useDepositGasF
 import { useEthPrice } from "../../hooks/vault/useEthPrice";
 import { usePreviewWithdraw } from "../../hooks/vault/usePreviewWithdraw";
 
+/**
+ * Test note: The preview isn't necessary for the transactions, since we were told that it's 1:1,
+ * but I did it anyway since I was interested in the vault implementation.
+ */
 const RestakeApp: React.FC = () => {
   const {
     balance: balanceOfVault,
@@ -26,10 +30,12 @@ const RestakeApp: React.FC = () => {
   const { balance: currentBalance, isLoading: isLoadingBalance } =
     useBalanceETH();
   const [stakeAmount, setStakeAmount] = useState<number>(0);
+  // Test note: The preview isn't necessary, since we were told that it's 1:1
   const { shares: previewReceiveAmount } = usePreviewDeposit(stakeAmount.toString());
   const { isConnected } = useAccount();
   const [isDeposit, setIsDeposit] = useState(true);
   const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
+  // Test note: The preview isn't necessary, since we were told that it's 1:1
   const { assets: previewWithdrawAmount } = usePreviewWithdraw(withdrawAmount.toString());
   const { gasFees: depositGasFees, refetchGasFees: refetchDepositGasFees, isLoading: isDepositGasFeesLoading } = useVaultEstimateDepositGasFees(stakeAmount.toString());
   const { convertEthToUsd, isLoading: isEthPriceLoading } = useEthPrice();

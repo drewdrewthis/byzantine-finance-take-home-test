@@ -39,7 +39,7 @@ export default function Home() {
           .
         </p>
         <p>
-          Move to the <Link href="/exercise2">next exercise</Link>.
+          Move to the <Link href="/exercise2" className="text-link">next exercise</Link>.
         </p>
       </div>
       <div className={styles.tableContainer}>

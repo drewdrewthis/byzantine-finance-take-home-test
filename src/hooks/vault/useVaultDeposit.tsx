@@ -49,7 +49,7 @@ export function useVaultDeposit() {
       return receipt;
     } catch (err) {
       console.error(err);
-      handleTransactionError(err, toastId);
+      handleTransactionError(err as Error, toastId);
       setError((err as Error).message);
       throw err;
     } finally {

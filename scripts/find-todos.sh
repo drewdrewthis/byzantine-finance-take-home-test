@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Simple script to find all TODOs in the codebase and format them as markdown
+# Not ideal for a large codebase, but it's a quick way to find all TODOs
+
 # Create or clear the TODO.md file
 echo "# TODOs Found in Codebase" > TODO.md
 echo "Last updated: $(date)\n" >> TODO.md
