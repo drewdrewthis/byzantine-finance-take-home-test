@@ -6,11 +6,7 @@ import { useAccount } from "wagmi";
 import { Button } from "@/ui/components/button";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  useVaultContract,
-  useVaultPreviewDeposit,
-  useVaultPreviewWithdraw,
-} from "@/contracts/byzETHVault/hooks";
+import { useVaultContract } from "@/contracts/byzETHVault/hooks";
 import { useBalanceETH, useEthPrice } from "@/hooks";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 
@@ -35,13 +31,9 @@ const RestakeApp: React.FC = () => {
   } = useVaultContract();
   const { balance: currentBalance, isLoading: isLoadingBalance } =
     useBalanceETH();
-  const [stakeAmount, setStakeAmount] = useState<number>(0);
-  // Test note: The preview isn't necessary, since we were told that it's 1:1
-  const { shares: previewReceiveAmount } = useVaultPreviewDeposit(stakeAmount.toString());
+  const [depositAmount, setDepositAmount] = useState<number>(0);
   const [isDeposit, setIsDeposit] = useState(true);
   const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
-  // Test note: The preview isn't necessary, since we were told that it's 1:1
-  const { assets: previewWithdrawAmount } = useVaultPreviewWithdraw(withdrawAmount.toString());
   const [gasFees, setGasFees] = useState<string | null>(null);
   const isLoading = isVaultLoading || isLoadingBalance || isEthPriceLoading;
 
@@ -51,7 +43,7 @@ const RestakeApp: React.FC = () => {
   useEffect(() => {
     const fetchGasFees = async () => {
       if (isDeposit) {
-        const gasFees = await estimateDepositGasFees(stakeAmount.toString()); 
+        const gasFees = await estimateDepositGasFees(depositAmount.toString()); 
         setGasFees(gasFees);
       } else {
         const gasFees = await estimateWithdrawGasFees(withdrawAmount.toString());
@@ -60,7 +52,7 @@ const RestakeApp: React.FC = () => {
     }
 
     fetchGasFees();
-  }, [estimateDepositGasFees, estimateWithdrawGasFees, isDeposit]);
+  }, [estimateDepositGasFees, estimateWithdrawGasFees, depositAmount, withdrawAmount]);
 
   /**
    * Handles the main action button click (deposit/withdraw)
@@ -73,29 +65,12 @@ const RestakeApp: React.FC = () => {
     }
 
     if (isDeposit) {
-      deposit(stakeAmount.toString());
+      deposit(depositAmount.toString());
     } else {
-      withdraw(previewReceiveAmount.toString());
+      withdraw(withdrawAmount.toString());
     }
-  }, [stakeAmount, isConnected, isDeposit, previewReceiveAmount, withdraw, deposit]);
+  }, [depositAmount, isConnected, isDeposit, withdrawAmount, withdraw, deposit]);
 
-  /**
-   * Updates withdraw amount when deposit preview changes
-   */
-  useEffect(() => {
-    if (isDeposit) {
-      setWithdrawAmount(Number(previewReceiveAmount));
-    }
-  }, [isDeposit, previewReceiveAmount, stakeAmount, withdrawAmount]); 
-
-  /**
-   * Updates stake amount when withdraw preview changes
-   */
-  useEffect(() => {
-    if (!isDeposit) { 
-      setStakeAmount(Number(previewWithdrawAmount));
-    }
-  }, [previewWithdrawAmount, isDeposit]); 
 
   /**
    * Refreshes the vault balance
@@ -103,6 +78,35 @@ const RestakeApp: React.FC = () => {
   const handleRefresh = useCallback(() => {
     refetchBalance();
   }, [refetchBalance]);   
+
+  /**
+   * Handles changes to the withdraw amount input
+   * Updates related state values and previews
+   */
+  const handleWithdrawChange = useCallback((value: string) => {
+    const amount = value === "" ? 0 : Number(value);
+    if (amount < 0) return;
+    setWithdrawAmount(amount);
+    setDepositAmount(amount);
+  }, [isDeposit]);
+
+  /**
+   * Handles changes to the stake/deposit amount input 
+   * Updates related state values and previews
+   * 
+   * Test note: Since the instructions were that the the deposit/withdraw were at 1:1
+   * We could use the same state value and method for both deposit and withdraw
+   * however, separating them makes it easier modify the logic in the future.
+   * 
+   * In a real-world scenario, we would probably be using the previewWithdraw and previewDeposit functions
+   * to get the amount of ETH that would be received for a given amount of shares and vice versa
+   */
+  const handleDepositChange = useCallback((value: string) => {
+    const amount = value === "" ? 0 : Number(value);
+    if (amount < 0) return;
+    setDepositAmount(amount);
+    setWithdrawAmount(amount);
+  }, [isDeposit]);
 
   return (
     <div className={styles.restakeApp}>
@@ -138,17 +142,13 @@ const RestakeApp: React.FC = () => {
           <div className={styles.rightInput}>
             <input
               type="number"
-              value={stakeAmount === null ? "" : stakeAmount}
-              onChange={(e) =>
-                setStakeAmount(
-                  e.target.value === "" ? 0 : Number(e.target.value)
-                )
-              }
+              value={depositAmount === null ? "" : depositAmount}
+              onChange={(e) => handleDepositChange(e.target.value)}
               placeholder="0"
             />
 
             <div className={styles.price}>
-              <span>${convertEthToUsd(stakeAmount).toFixed(8)}</span>
+              <span>${convertEthToUsd(depositAmount).toFixed(8)}</span>
             </div>
           </div>
         </div>
@@ -193,7 +193,7 @@ const RestakeApp: React.FC = () => {
           </div>
           <div className={styles.rightInput}>
             <div className={styles.resultAmount}>
-              <input type="number" value={withdrawAmount} onChange={(e) => setWithdrawAmount(Number(e.target.value))} />
+              <input type="number" value={withdrawAmount} onChange={(e) => handleWithdrawChange(e.target.value)} />
             </div>
             <div className={styles.price}>
               <span>${convertEthToUsd(withdrawAmount).toFixed(8)}</span>
