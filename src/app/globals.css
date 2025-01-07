@@ -1,6 +1,5 @@
 /* UI Styles */
-@import "@/ui/global.css";
-@import "@/ui/shared.scss";
+@import "@/ui/styles.css";
 
 /** Override Styles */
 :root {

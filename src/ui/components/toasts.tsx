@@ -7,10 +7,9 @@ interface TransactionToastProps {
 
 const TransactionToast = ({ hash, message }: TransactionToastProps) => {
   return (
-    <div>
-      {message} <br />
-      <span>
-        Hash:{" "}
+    <div className="w-full max-w-[200px]">
+      <span className="font-semibold">{message}</span> <br />
+      <span className="w-full whitespace-nowrap inline-block text-xs text-ellipsis overflow-hidden">
         <a
           // TODO: This should come from a config that is aware of the connected chain
           href={`https://holesky.etherscan.io/tx/${hash}`}

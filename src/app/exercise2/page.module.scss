@@ -1,4 +1,3 @@
-@import '../../ui/shared';
 .page {
   display: flex;
   padding: 20px;
@@ -13,9 +12,6 @@
     justify-content: flex-start;
     align-items: center;
     margin-top: 52px;
-    a {
-      @apply text-link;
-    }
   }
   .appContainer {
     display: flex;

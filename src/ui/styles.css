@@ -69,3 +69,12 @@
     @apply bg-background text-foreground;
   }
 }
+.text-link {
+  color: #2097ff;
+  text-decoration: none;
+
+  &:hover {
+    color: #0d63ae;
+    text-decoration: underline;
+  }
+}

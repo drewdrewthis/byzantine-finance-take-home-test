@@ -32,6 +32,7 @@ export default function Home() {
           <a
             href="https://byzantine.notion.site/PUBLIC-2-exercises-for-the-take-home-test-166e4c2abbc48083a078e3af7769b55f?pvs=4#166e4c2abbc4808a9c49c215a749dbb0"
             target="_blank"
+            className="text-link"
           >
             here
           </a>
