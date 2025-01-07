@@ -33,7 +33,7 @@ export function useVaultWithdraw() {
       const hash = await writeContractAsync({
         ...CONTRACT_CONFIG,
         functionName: 'withdraw',
-        args: [parseEther(amount), address!, CONTRACT_CONFIG.address],
+        args: [parseEther(amount), address!, address!],
       });
       const receipt = await handleWaitForTransactionReceipt(hash, toastId);
       toast.success(<ToastSuccessfullWithdrawal hash={hash} />, { id: toastId });

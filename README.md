@@ -90,11 +90,14 @@ View the TODO.md file [here](./TODO.md)
 #### Implemented features
 
 * Wallet connect
-* Restake/withdraw from vault
-* Flip feature for restaking/withdrawing
+* Deposit/withdraw from vault
+* Flip feature for deposit/withdraw UI
 * Gas fee estimation
 * ETH/USD price pull/integration
 * Refresh button + animation
+* Error handling
+* Input formatting
+* Input validation
 
 #### Additional considerations/TODOs
 

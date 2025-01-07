@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import BigNumber from "bignumber.js";
 import { useCallback, useMemo } from "react";
 
 interface EthereumPrice {
@@ -91,8 +92,8 @@ export function useEthPrice() {
    * @returns USD value as number
    */
    const convertEthToUsd = useCallback(
-    (ethAmount: number): number => {
-      return ethAmount * currentPrice;
+    (ethAmount: string): string => {
+      return new BigNumber(ethAmount).multipliedBy(currentPrice).toFixed(2);
     },
     [currentPrice]
   );
