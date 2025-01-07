@@ -9,7 +9,6 @@ import { useAccount } from "wagmi";
 import { usePreviewDeposit } from "../../hooks/vault/usePreviewDeposit";
 import { Button } from "../../ui/components/button";
 import { Loader2 } from "lucide-react";
-import transferArrow from "@/ui/components/icons/transfer-arrow.svg";
 import { cn } from "../../lib/utils";
 import { useVaultEstimateDepositGasFees } from "../../hooks/vault/useDepositGasFees";
 import { useEthPrice } from "../../hooks/vault/useEthPrice";

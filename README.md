@@ -47,13 +47,17 @@ View the TODO.md file [here](./TODO.md)
 
 ### Architectural
 
-* I've chosen to go with TailwindCSS for styling, as I find it to be a more modern and flexible approach to styling than the original codebase boilerplate's approach of using CSS modules. I believe it does a better job of providing consistency and theming, and a better prototyping experience being able to work directly in the markup. I've done a base-level job of integrating the two, which works well, but reworking the existing css was out of scope for this test.
+* I've chosen to go with TailwindCSS for styling, as I find it to be a more modern and flexible approach to styling than the original codebase boilerplate's approach of using CSS modules. I believe it does a better job of providing consistency and theming, and a better prototyping experience being able to work directly in the markup. Moreover, it still works well alongside CSS modules for special cases. I've done a base-level job of integrating the two, which works well, but reworking the existing css was out of scope for this test.
 
-* For the components I've added, I've make a distinction between the UI components (in the UI directory) and the app components. The distinction here is that UI components should be generic and not aware of the app's data/state, whereas app components should be aware of the app's data/state. This allows for more flexibility and reusability of UI components, as well as a clearer separation of concerns.
+* For the components I've added, I've made a distinction between the UI components (in the UI directory) and the app components. The distinction here is that UI components should be generic and not aware of the app's data/state, whereas app components should be aware of the app's data/state. This allows for more flexibility and reusability of UI components, as well as a clearer separation of concerns.
 
 ### Testing
 
 * I strongly believe in TDD in general, especially with a long-term project in a shared codebase, however, e2e testing seemed out of scope for this challenge, and the value of unit/integration testing for this challenge was low given the simplicity of the logic.
+
+### Linting
+
+* I'd like to add linting rules that would automatically clean up the imports in the codebase, but this was out of scope for this test.
 
 ### Exercise 1: Search
 
@@ -101,6 +105,8 @@ View the TODO.md file [here](./TODO.md)
 * I've removed the "Reward rate" and "Validator activation" information, as well as the "Service fees" information, as they seemed out of scope for this test without more information/instruction.
 
 * Lastly, the color scheme needed to be adjusted, since the values were not readable against the background in the original codebase boilerplate.
+
+* TODO: There isn't currently a way to switch between chains. This would need to be added, as well as a distinction between dev/prod environments.
 
 ---
 
