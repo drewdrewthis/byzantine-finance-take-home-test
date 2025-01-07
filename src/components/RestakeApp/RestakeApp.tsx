@@ -5,11 +5,10 @@ import ETH from "@/assets/tokens/ETH.png";
 import { useAccount } from "wagmi";
 import { Button } from "@/ui/components/button";
 import { Loader2 } from "lucide-react";
-import { cn, getInputFontSize, formatInputValue } from "@/lib/utils";
+import { cn, getInputFontSize, formatNumberInputValue } from "@/lib/utils";
 import { useVaultContract } from "@/contracts/byzETHVault/hooks";
 import { useBalanceETH, useEthPrice } from "@/hooks";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { formatEther, formatUnits, parseUnits } from "viem";
 
 /**
  * RestakeApp Component
@@ -37,13 +36,48 @@ const RestakeApp: React.FC = () => {
   const [isDeposit, setIsDeposit] = useState(true);
   const [withdrawAmount, setWithdrawAmount] = useState<string>("0");
   const [gasFees, setGasFees] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const isLoading = isVaultLoading || isLoadingBalance || isEthPriceLoading;
+
+  /**
+   * Validates input amounts against available balances
+   */
+  useEffect(() => {
+    if (!isConnected) {
+      setError(null);
+      return;
+    }
+
+    if (isDeposit) {
+      const ethBalance = currentBalance.formatted ? Number(currentBalance.formatted) : 0;
+      const depositNum = Number(depositAmount);
+      
+      if (depositNum > ethBalance) {
+        setError(`Insufficient ETH balance. Available: ${ethBalance.toFixed(4)} ETH`);
+      } else {
+        setError(null);
+      }
+    } else {
+      const vaultBalance = balanceOfVault ? Number(balanceOfVault) : 0;
+      const withdrawNum = Number(withdrawAmount);
+
+      if (withdrawNum > vaultBalance) {
+        setError(`Insufficient ${symbol} balance. Available: ${vaultBalance} ${symbol}`);
+      } else {
+        setError(null);
+      }
+    }
+  }, [depositAmount, withdrawAmount, isDeposit, currentBalance.formatted, balanceOfVault, isConnected, symbol]);
 
   /**
    * Fetches and updates gas fee estimates whenever the deposit/withdraw amount or mode changes
    */
   useEffect(() => {
     const fetchGasFees = async () => {
+      if (!isConnected || error) {
+        return;
+      }
+
       if (isDeposit) {
         const gasFees = await estimateDepositGasFees(depositAmount.toString()); 
         setGasFees(gasFees);
@@ -54,7 +88,7 @@ const RestakeApp: React.FC = () => {
     }
 
     fetchGasFees();
-  }, [estimateDepositGasFees, estimateWithdrawGasFees, depositAmount, withdrawAmount]);
+  }, [estimateDepositGasFees, estimateWithdrawGasFees, depositAmount, withdrawAmount, isConnected, error]);
 
   /**
    * Handles the main action button click (deposit/withdraw)
@@ -66,12 +100,16 @@ const RestakeApp: React.FC = () => {
       return;
     }
 
+    if (error) {
+      return;
+    }
+
     if (isDeposit) {
       deposit(depositAmount.toString());
     } else {
       withdraw(withdrawAmount.toString());
     }
-  }, [depositAmount, isConnected, isDeposit, withdrawAmount, withdraw, deposit]);
+  }, [depositAmount, isConnected, isDeposit, withdrawAmount, withdraw, deposit, error]);
 
 
   /**
@@ -82,7 +120,7 @@ const RestakeApp: React.FC = () => {
   }, [refetchBalance]);   
 
   const handleInputChange = useCallback((value: string, decimals: number) => {
-    const amount = value === '' ? '0' : formatInputValue(value, decimals);
+    const amount = value === '' ? '0' : formatNumberInputValue(value, decimals);
     setDepositAmount(amount);
     setWithdrawAmount(amount); 
   }, []); 
@@ -217,12 +255,19 @@ const RestakeApp: React.FC = () => {
               />
             </div>
             <div className={styles.price}>
-              <span>${convertEthToUsd(withdrawAmount).toFixed(2)}</span>
+              <span>${convertEthToUsd(withdrawAmount)}</span>
             </div>
           </div>
         </div>
       </div>
       </div>
+
+      {/* Error message */}
+      {error && (
+        <div className="text-destructive text-sm mt-2">
+          {error}
+        </div>
+      )}
 
       {/* Restake button */}
       <Button
@@ -230,7 +275,7 @@ const RestakeApp: React.FC = () => {
         onClick={() => {
           handleButtonClick();
         }}
-        disabled={isLoading}
+        disabled={isLoading || !!error}
       >
         {isLoading ? <Loader2 className="animate-spin" /> : (isDeposit ? "Restake" : "Withdraw")}
       </Button>
@@ -248,7 +293,7 @@ const RestakeApp: React.FC = () => {
           Service fees: <span>0%</span>
         </div> */}
         <div className={styles.infoLine}>
-          Gas fees: <span className="text-xs">{gasFees ? `~ $${convertEthToUsd(Number(gasFees)).toFixed(8)}` : "Connect wallet to estimate gas fees"}</span>
+          Gas fees: <span className="text-xs">{gasFees ? `~ $${convertEthToUsd(gasFees)}` : "Connect wallet to estimate gas fees"}</span>
         </div>
       </div>
     </div>

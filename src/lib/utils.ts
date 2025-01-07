@@ -39,7 +39,11 @@ export function handleTransactionError(error: Error, toastId: string) {
   throw error;
 } 
 
-// Add this helper function at the top of the component
+/**
+ * Function to get dynamic input font size based on the value length
+ * @param value - The value to get the font size for
+ * @returns The font size
+ */
 export function getInputFontSize(value: string): string {
   const length = value.length;
   if (length > 18) return '0.8rem'; // 14px
@@ -47,7 +51,13 @@ export function getInputFontSize(value: string): string {
   return '2rem'; // 32px default
 };
 
-export function formatInputValue(value: string, decimals: number): string {
+/**
+ * Function to format input value to a specific number of decimals
+ * @param value - The value to format
+ * @param decimals - The number of decimals
+ * @returns The formatted value
+ */
+export function formatNumberInputValue(value: string, decimals: number): string {
   BigNumber.config({ EXPONENTIAL_AT: 1e+9 })
   return new BigNumber(value).dp(decimals).toString();
 }
