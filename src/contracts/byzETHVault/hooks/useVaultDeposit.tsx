@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { useWriteContract } from "wagmi";
 import { useAccount } from "wagmi";
-import { useTransactionWatcher } from "../useTransactionWatcher";
-import { ToastSuccessfullDeposit } from "../../ui/components/toasts";
-import { CONTRACT_CONFIG } from "@/contracts/byzETHVault";
+import { useTransactionWatcher } from "../../../hooks/useTransactionWatcher";
+import { ToastSuccessfullDeposit } from "../../../ui/components/toasts";
+import { CONTRACT_CONFIG } from "../config";
 import { parseEther } from "viem";
 import toast from "react-hot-toast";
-import { handleTransactionError } from "../../lib/utils";
+import { handleTransactionError } from "../../../lib/utils";
 import { useVaultBalance } from "./useVaultBalance";
 
+/**
+ * Hook for depositing ETH into the byzETH vault
+ */
 export function useVaultDeposit() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,6 +20,11 @@ export function useVaultDeposit() {
   const { handleWaitForTransactionReceipt } = useTransactionWatcher(); 
   const { refetchBalance } = useVaultBalance();
 
+  /**
+   * Function to deposit ETH into the vault
+   * @param amount - The amount of ETH to deposit
+   * @returns A promise that resolves to the transaction receipt
+   */
   const deposit = async (amount: string) => {
     const toastId = toast.loading('Initiating deposit transaction...');
 

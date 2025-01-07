@@ -2,12 +2,17 @@ import { useReadContract, useWriteContract, useAccount } from "wagmi";
 import { useState } from "react";
 import { erc20Abi, Hash } from "viem";
 import toast from "react-hot-toast";
-import { useTransactionWatcher } from "../useTransactionWatcher";
+import { useTransactionWatcher } from "../../../hooks/useTransactionWatcher";
 
 // Maximum uint256 value for unlimited approval
 const MAX_UINT256 = BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
 
-export function useTokenApproval(tokenAddress: string, spenderAddress: string) {
+/**
+ * Hook for approving a spender to spend tokens on behalf of the user
+ * @param tokenAddress - The address of the token to approve
+ * @param spenderAddress - The address of the spender
+ */
+export function useVaultTokenApproval(tokenAddress: string, spenderAddress: string) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { address } = useAccount();
@@ -27,6 +32,7 @@ export function useTokenApproval(tokenAddress: string, spenderAddress: string) {
 
   /**
    * Approves the spender to spend the maximum amount of tokens
+   * @returns A promise that resolves to the transaction receipt
    */
   const approve = async () => {
     const toastId = toast.loading('Requesting approval...');

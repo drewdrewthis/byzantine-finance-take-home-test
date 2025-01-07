@@ -1,12 +1,13 @@
 import { useAccount, useReadContract } from "wagmi";
-import { CONTRACT_CONFIG } from "@/contracts/byzETHVault";
+import { CONTRACT_CONFIG } from "@/contracts/byzETHVault/config";
 import { formatEther, parseEther } from "viem";
 
 /**
  * Hook to preview the amount of shares that would be received for a given deposit amount
  * Uses the vault's previewDeposit function which simulates the deposit and returns expected shares
+ * @param amount - The amount of ETH to deposit
  */
-export function usePreviewDeposit(amount: string) {
+export function useVaultPreviewDeposit(amount: string) {
   const { address } = useAccount(); 
   const { data: shares, error } = useReadContract({
     ...CONTRACT_CONFIG,

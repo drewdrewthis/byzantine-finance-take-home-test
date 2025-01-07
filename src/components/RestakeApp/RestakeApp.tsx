@@ -1,24 +1,28 @@
-// src/components/RestakeApp.tsx
 import React, { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import styles from "./RestakeApp.module.scss";
 import ETH from "@/assets/tokens/ETH.png";
-import { useVaultContract } from "../../hooks/vault/useVaultContract";
-import { useBalanceETH } from "../../hooks/useBalanceETH";
 import { useAccount } from "wagmi";
-import { usePreviewDeposit } from "../../hooks/vault/usePreviewDeposit";
-import { Button } from "../../ui/components/button";
+import { Button } from "@/ui/components/button";
 import { Loader2 } from "lucide-react";
-import { cn } from "../../lib/utils";
-import { useVaultEstimateDepositGasFees } from "../../hooks/vault/useDepositGasFees";
-import { useEthPrice } from "../../hooks/vault/useEthPrice";
-import { usePreviewWithdraw } from "../../hooks/vault/usePreviewWithdraw";
+import { cn } from "@/lib/utils";
+import {
+  useVaultContract,
+  useVaultPreviewDeposit,
+  useVaultPreviewWithdraw,
+} from "@/contracts/byzETHVault/hooks";
+import { useBalanceETH, useEthPrice } from "@/hooks";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 /**
- * Test note: The preview isn't necessary for the transactions, since we were told that it's 1:1,
- * but I did it anyway since I was interested in the vault implementation.
+ * RestakeApp Component
+ * 
+ * A React component that provides a user interface for staking and unstaking ETH in the byzETH vault.
  */
 const RestakeApp: React.FC = () => {
+  const { isConnected } = useAccount();
+  const { openConnectModal } = useConnectModal();
+  const { convertEthToUsd, isLoading: isEthPriceLoading } = useEthPrice();
   const {
     balance: balanceOfVault,
     isLoading: isVaultLoading,
@@ -26,22 +30,48 @@ const RestakeApp: React.FC = () => {
     withdraw,
     refetchBalance,
     symbol,
+    estimateWithdrawGasFees,
+    estimateDepositGasFees,
   } = useVaultContract();
   const { balance: currentBalance, isLoading: isLoadingBalance } =
     useBalanceETH();
   const [stakeAmount, setStakeAmount] = useState<number>(0);
   // Test note: The preview isn't necessary, since we were told that it's 1:1
-  const { shares: previewReceiveAmount } = usePreviewDeposit(stakeAmount.toString());
-  const { isConnected } = useAccount();
+  const { shares: previewReceiveAmount } = useVaultPreviewDeposit(stakeAmount.toString());
   const [isDeposit, setIsDeposit] = useState(true);
   const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
   // Test note: The preview isn't necessary, since we were told that it's 1:1
-  const { assets: previewWithdrawAmount } = usePreviewWithdraw(withdrawAmount.toString());
-  const { gasFees: depositGasFees, refetchGasFees: refetchDepositGasFees, isLoading: isDepositGasFeesLoading } = useVaultEstimateDepositGasFees(stakeAmount.toString());
-  const { convertEthToUsd, isLoading: isEthPriceLoading } = useEthPrice();
-  const isLoading = isVaultLoading || isLoadingBalance || isDepositGasFeesLoading || isEthPriceLoading
+  const { assets: previewWithdrawAmount } = useVaultPreviewWithdraw(withdrawAmount.toString());
+  const [gasFees, setGasFees] = useState<string | null>(null);
+  const isLoading = isVaultLoading || isLoadingBalance || isEthPriceLoading;
 
+  /**
+   * Fetches and updates gas fee estimates whenever the deposit/withdraw amount or mode changes
+   */
+  useEffect(() => {
+    const fetchGasFees = async () => {
+      if (isDeposit) {
+        const gasFees = await estimateDepositGasFees(stakeAmount.toString()); 
+        setGasFees(gasFees);
+      } else {
+        const gasFees = await estimateWithdrawGasFees(withdrawAmount.toString());
+        setGasFees(gasFees);
+      }
+    }
+
+    fetchGasFees();
+  }, [estimateDepositGasFees, estimateWithdrawGasFees, isDeposit]);
+
+  /**
+   * Handles the main action button click (deposit/withdraw)
+   * Executes the appropriate transaction based on current mode
+   */
   const handleButtonClick = useCallback(() => {
+    if (!isConnected) {
+      openConnectModal?.();
+      return;
+    }
+
     if (isDeposit) {
       deposit(stakeAmount.toString());
     } else {
@@ -49,22 +79,30 @@ const RestakeApp: React.FC = () => {
     }
   }, [stakeAmount, isConnected, isDeposit, previewReceiveAmount, withdraw, deposit]);
 
+  /**
+   * Updates withdraw amount when deposit preview changes
+   */
   useEffect(() => {
     if (isDeposit) {
       setWithdrawAmount(Number(previewReceiveAmount));
     }
   }, [isDeposit, previewReceiveAmount, stakeAmount, withdrawAmount]); 
 
+  /**
+   * Updates stake amount when withdraw preview changes
+   */
   useEffect(() => {
     if (!isDeposit) { 
       setStakeAmount(Number(previewWithdrawAmount));
     }
   }, [previewWithdrawAmount, isDeposit]); 
 
+  /**
+   * Refreshes the vault balance
+   */
   const handleRefresh = useCallback(() => {
     refetchBalance();
-    refetchDepositGasFees();
-  }, [refetchBalance, refetchDepositGasFees]);   
+  }, [refetchBalance]);   
 
   return (
     <div className={styles.restakeApp}>
@@ -189,7 +227,7 @@ const RestakeApp: React.FC = () => {
           Service fees: <span>0%</span>
         </div> */}
         <div className={styles.infoLine}>
-          Gas fees: <span>{depositGasFees ? `~ $${convertEthToUsd(Number(depositGasFees)).toFixed(8)}` : "--"}</span>
+          Gas fees: <span className="text-xs">{gasFees ? `~ $${convertEthToUsd(Number(gasFees)).toFixed(8)}` : "Connect wallet to estimate gas fees"}</span>
         </div>
       </div>
     </div>
