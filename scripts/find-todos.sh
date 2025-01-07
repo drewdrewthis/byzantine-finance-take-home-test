@@ -2,7 +2,7 @@
 
 # Create or clear the TODO.md file
 echo "# TODOs Found in Codebase" > TODO.md
-echo "\nLast updated: $(date)\n" >> TODO.md
+echo "Last updated: $(date)\n" >> TODO.md
 
 # Find all TODOs and format them as markdown
 find . -type f \

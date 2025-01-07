@@ -44,7 +44,7 @@ export function SearchBar({ onInputChange, className, ...props }: SearchBarProps
       <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
       <Input
         ref={inputRef}
-        placeholder="Search vaults..."
+        placeholder="Filter vaults..."
         onChange={handleChange}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}

@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* TODO: This should be reconciled with the global.css that came with the boilerplate for a consistent theme */
 @layer base {
   :root {
     /* --background: 0 0% 100%;
