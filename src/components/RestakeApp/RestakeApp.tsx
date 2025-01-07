@@ -5,10 +5,11 @@ import ETH from "@/assets/tokens/ETH.png";
 import { useAccount } from "wagmi";
 import { Button } from "@/ui/components/button";
 import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, getInputFontSize, formatInputValue } from "@/lib/utils";
 import { useVaultContract } from "@/contracts/byzETHVault/hooks";
 import { useBalanceETH, useEthPrice } from "@/hooks";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { formatEther, formatUnits, parseUnits } from "viem";
 
 /**
  * RestakeApp Component
@@ -26,14 +27,15 @@ const RestakeApp: React.FC = () => {
     withdraw,
     refetchBalance,
     symbol,
+    decimals,
     estimateWithdrawGasFees,
     estimateDepositGasFees,
   } = useVaultContract();
   const { balance: currentBalance, isLoading: isLoadingBalance } =
     useBalanceETH();
-  const [depositAmount, setDepositAmount] = useState<number>(0);
+  const [depositAmount, setDepositAmount] = useState<string>("0");
   const [isDeposit, setIsDeposit] = useState(true);
-  const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
+  const [withdrawAmount, setWithdrawAmount] = useState<string>("0");
   const [gasFees, setGasFees] = useState<string | null>(null);
   const isLoading = isVaultLoading || isLoadingBalance || isEthPriceLoading;
 
@@ -79,16 +81,19 @@ const RestakeApp: React.FC = () => {
     refetchBalance();
   }, [refetchBalance]);   
 
+  const handleInputChange = useCallback((value: string, decimals: number) => {
+    const amount = value === '' ? '0' : formatInputValue(value, decimals);
+    setDepositAmount(amount);
+    setWithdrawAmount(amount); 
+  }, []); 
+
   /**
    * Handles changes to the withdraw amount input
    * Updates related state values and previews
    */
   const handleWithdrawChange = useCallback((value: string) => {
-    const amount = value === "" ? 0 : Number(value);
-    if (amount < 0) return;
-    setWithdrawAmount(amount);
-    setDepositAmount(amount);
-  }, [isDeposit]);
+    handleInputChange(value, decimals ?? 18);
+  }, [decimals]);
 
   /**
    * Handles changes to the stake/deposit amount input 
@@ -102,11 +107,8 @@ const RestakeApp: React.FC = () => {
    * to get the amount of ETH that would be received for a given amount of shares and vice versa
    */
   const handleDepositChange = useCallback((value: string) => {
-    const amount = value === "" ? 0 : Number(value);
-    if (amount < 0) return;
-    setDepositAmount(amount);
-    setWithdrawAmount(amount);
-  }, [isDeposit]);
+    handleInputChange(value, 18);
+  }, []);
 
   return (
     <div className={styles.restakeApp}>
@@ -140,15 +142,22 @@ const RestakeApp: React.FC = () => {
             </div>
           </div>
           <div className={styles.rightInput}>
-            <input
+            <input 
               type="number"
-              value={depositAmount === null ? "" : depositAmount}
+              value={depositAmount}
               onChange={(e) => handleDepositChange(e.target.value)}
               placeholder="0"
+              style={{
+                fontSize: getInputFontSize(depositAmount)
+              }}
+              className="text-ellipsis overflow-hidden"
+              title={depositAmount.toString()}
+              // Clean up the input value when it loses focus
+              onBlur={() => setDepositAmount(depositAmount)}
             />
 
             <div className={styles.price}>
-              <span>${convertEthToUsd(depositAmount).toFixed(8)}</span>
+              <span>${convertEthToUsd(depositAmount)}</span>
             </div>
           </div>
         </div>
@@ -193,10 +202,22 @@ const RestakeApp: React.FC = () => {
           </div>
           <div className={styles.rightInput}>
             <div className={styles.resultAmount}>
-              <input type="number" value={withdrawAmount} onChange={(e) => handleWithdrawChange(e.target.value)} />
+              <input 
+                type="number"
+                value={withdrawAmount}
+                placeholder="0"
+                onChange={(e) => handleWithdrawChange(e.target.value)} 
+                style={{
+                  fontSize: getInputFontSize(withdrawAmount)
+                }}
+                className="text-ellipsis overflow-hidden"
+                title={withdrawAmount.toString()}
+                // Clean up the input value when it loses focus
+                onBlur={() => setWithdrawAmount(withdrawAmount)}
+              />
             </div>
             <div className={styles.price}>
-              <span>${convertEthToUsd(withdrawAmount).toFixed(8)}</span>
+              <span>${convertEthToUsd(withdrawAmount).toFixed(2)}</span>
             </div>
           </div>
         </div>

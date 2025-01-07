@@ -1,35 +1,64 @@
-import { useReadContract } from 'wagmi';
+import { usePublicClient } from 'wagmi';
 import { useVaultBalance } from './useVaultBalance';
 import { useVaultDeposit } from './useVaultDeposit';
 import { useVaultWithdraw } from './useVaultWithdraw';
 import { CONTRACT_CONFIG } from '../config';
 import { useVaultEstimateWithdrawGasFees } from './useVaultEstimateWithdrawGasFees';
 import { useVaultEstimateDepositGasFees } from './useVaultEstimateDepositGasFees';
+import { useEffect, useState } from 'react';
 
 /**
  * Hook for interacting with the byzETH vault
  */
 export function useVaultContract() {
+  const client = usePublicClient(); 
   const { deposit, isLoading: isDepositLoading, error: depositError } = useVaultDeposit();
   const { withdraw, isLoading: isWithdrawLoading, error: withdrawError } = useVaultWithdraw();
   const { balance, refetchBalance, isLoading: isBalanceLoading } = useVaultBalance()
   const { estimateGasFees: estimateWithdrawGasFees } = useVaultEstimateWithdrawGasFees(); 
   const { estimateGasFees: estimateDepositGasFees } = useVaultEstimateDepositGasFees();
+  const [symbol, setSymbol] = useState<string>();
+  const [decimals, setDecimals] = useState<number>();
+  const [isSymbolLoading, setIsSymbolLoading] = useState(true);
+  const [isDecimalsLoading, setIsDecimalsLoading] = useState(true);
 
-  const { data: symbol, isLoading: isSymbolLoading } = useReadContract({
-    ...CONTRACT_CONFIG,
-    functionName: 'symbol',
-  });
+  useEffect(() => {
+    const fetchContractData = async () => {
+      try {
+        if (!client) return;
+        const [symbolData, decimalsData] = await Promise.all([
+          client.readContract({
+            ...CONTRACT_CONFIG,
+            functionName: 'symbol',
+          }),
+          client.readContract({
+            ...CONTRACT_CONFIG, 
+            functionName: 'decimals',
+          })
+        ]);
 
+        setSymbol(symbolData as string);
+        setDecimals(decimalsData as number);
+      } catch (error) {
+        console.error('Error fetching contract data:', error);
+      } finally {
+        setIsSymbolLoading(false);
+        setIsDecimalsLoading(false);
+      }
+    };
+
+    fetchContractData();
+  }, [client]);
 
   return {
     balance,
     deposit,
     withdraw,
-    isLoading: isDepositLoading || isWithdrawLoading || isBalanceLoading || isSymbolLoading,
+    isLoading: isDepositLoading || isWithdrawLoading || isBalanceLoading || isSymbolLoading || isDecimalsLoading,
     error: depositError || withdrawError,
     refetchBalance,
     symbol,
+    decimals,
     estimateWithdrawGasFees,
     estimateDepositGasFees,
   };

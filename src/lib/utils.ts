@@ -1,3 +1,4 @@
+import { BigNumber } from "bignumber.js";
 import { clsx, type ClassValue } from "clsx"
 import toast from "react-hot-toast";
 import { twMerge } from "tailwind-merge"
@@ -25,7 +26,7 @@ export function formatHash(hash: string) {
  * @param error - The error to handle
  * @param toastId - The ID of the toast to display
  */
-export const handleTransactionError = (error: Error, toastId: string) => {
+export function handleTransactionError(error: Error, toastId: string) {
   if (error.name === 'ConnectorNotConnectedError') {
     toast.error('Please connect your wallet first', { id: toastId });
   } else if (error.message.includes('User denied')) {
@@ -37,3 +38,16 @@ export const handleTransactionError = (error: Error, toastId: string) => {
   }
   throw error;
 } 
+
+// Add this helper function at the top of the component
+export function getInputFontSize(value: string): string {
+  const length = value.length;
+  if (length > 18) return '0.8rem'; // 14px
+  if (length > 12) return '1.125rem';  // 18px
+  return '2rem'; // 32px default
+};
+
+export function formatInputValue(value: string, decimals: number): string {
+  BigNumber.config({ EXPONENTIAL_AT: 1e+9 })
+  return new BigNumber(value).dp(decimals).toString();
+}
