@@ -46,8 +46,8 @@ export function handleTransactionError(error: Error, toastId: string) {
  */
 export function getInputFontSize(value: string): string {
   const length = value.length;
-  if (length > 18) return '0.8rem'; // 14px
-  if (length > 12) return '1.125rem';  // 18px
+  if (length > 18) return '0.825rem'; // 14px
+  if (length > 10) return '1.125rem';  // 18px
   return '2rem'; // 32px default
 };
 
@@ -58,8 +58,15 @@ export function getInputFontSize(value: string): string {
  * @returns The formatted value
  */
 export function formatNumberInputValue(value: string, decimals: number): string {
-  BigNumber.config({ EXPONENTIAL_AT: 1e+9 })
-  // Allow 0.000 
-  if (Number(value) === 0) return value;
-  return new BigNumber(value).dp(decimals).toString();
+  value = value === '' ? '0' : value;
+  value = Number(value) < 0 ? '0' : value;
+  if (value.match(/^0+$/)) return '0';
+  value = value.replace(/^0+(?=\d)/, '');
+
+  if (value?.split(/[.,]/)[1]?.length > decimals) {
+    BigNumber.config({ EXPONENTIAL_AT: 1e+9 })
+    return new BigNumber(value).dp(decimals).toString();
+  }
+
+  return value;
 }

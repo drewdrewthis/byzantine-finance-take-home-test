@@ -121,7 +121,7 @@ const RestakeApp: React.FC = () => {
   }, [refetchBalance]);   
 
   const handleInputChange = useCallback((value: string, decimals: number) => {
-    const amount = value === '' ? '0' : formatNumberInputValue(value, decimals);
+    const amount = formatNumberInputValue(value, decimals);
     setDepositAmount(amount);
     setWithdrawAmount(amount); 
   }, []); 
@@ -189,10 +189,7 @@ const RestakeApp: React.FC = () => {
               style={{
                 fontSize: getInputFontSize(depositAmount)
               }}
-              className="text-ellipsis overflow-hidden"
               title={depositAmount.toString()}
-              // Clean up the input value when it loses focus
-              onBlur={() => setDepositAmount(depositAmount)}
             />
 
             <div className={styles.price}>
@@ -249,10 +246,7 @@ const RestakeApp: React.FC = () => {
                 style={{
                   fontSize: getInputFontSize(withdrawAmount)
                 }}
-                className="text-ellipsis overflow-hidden"
                 title={withdrawAmount.toString()}
-                // Clean up the input value when it loses focus
-                onBlur={() => setWithdrawAmount(withdrawAmount)}
               />
             </div>
             <div className={styles.price}>
