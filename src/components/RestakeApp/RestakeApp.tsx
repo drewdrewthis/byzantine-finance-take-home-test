@@ -31,7 +31,7 @@ const RestakeApp: React.FC = () => {
     estimateWithdrawGasFees,
     estimateDepositGasFees,
   } = useVaultContract();
-  const { balance: currentBalance, isLoading: isLoadingBalance } =
+  const { balance: currentBalance, refetch: refetchBalanceETH, isLoading: isLoadingBalance } =
     useBalanceETH();
   const [depositAmount, setDepositAmount] = useState<string>("0");
   const [isDeposit, setIsDeposit] = useState(true);
@@ -118,7 +118,8 @@ const RestakeApp: React.FC = () => {
    */
   const handleRefresh = useCallback(() => {
     refetchBalance();
-  }, [refetchBalance]);   
+    refetchBalanceETH();
+  }, [refetchBalance, refetchBalanceETH]);   
 
   const handleInputChange = useCallback((value: string, decimals: number) => {
     const amount = formatNumberInputValue(value, decimals);

@@ -8,6 +8,7 @@ import { parseEther } from "viem";
 import toast from "react-hot-toast";
 import { handleTransactionError } from "../../../lib/utils";
 import { useVaultBalance } from "./useVaultBalance";
+import { useBalanceETH } from "../../../hooks/useBalanceETH";
 
 /**
  * Hook for depositing ETH into the byzETH vault
@@ -19,7 +20,7 @@ export function useVaultDeposit() {
   const { address } = useAccount();
   const { handleWaitForTransactionReceipt } = useTransactionWatcher(); 
   const { refetchBalance } = useVaultBalance();
-
+  const { refetch: refetchBalanceETH } = useBalanceETH();
   /**
    * Function to deposit ETH into the vault
    * @param amount - The amount of ETH to deposit
@@ -54,6 +55,7 @@ export function useVaultDeposit() {
       toast.success(<ToastSuccessfullDeposit hash={hash} />, { id: toastId });
       const receipt = await handleWaitForTransactionReceipt(hash, toastId);
       refetchBalance();
+      refetchBalanceETH();
       return receipt;
     } catch (err) {
       console.error(err);

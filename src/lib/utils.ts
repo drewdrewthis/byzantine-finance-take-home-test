@@ -60,6 +60,7 @@ export function getInputFontSize(value: string): string {
 export function formatNumberInputValue(value: string, decimals: number): string {
   value = value === '' ? '0' : value;
   value = Number(value) < 0 ? '0' : value;
+  value = value.match(/^[^0-9]/) ? '0' : value;
   if (value.match(/^0+$/)) return '0';
   value = value.replace(/^0+(?=\d)/, '');
 
